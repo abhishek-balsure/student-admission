@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courses - EduPortal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: #E9F1FA; }
+        .navbar { background: white; padding: 12px 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .navbar .left { display: flex; align-items: center; gap: 30px; }
+        .navbar .logo { color: #00ABE4; font-size: 22px; font-weight: 700; }
+        .navbar .links { display: flex; gap: 20px; }
+        .navbar .links a { color: #333; text-decoration: none; font-weight: 500; padding: 8px 15px; border-radius: 8px; transition: 0.3s; }
+        .navbar .links a:hover, .navbar .links a.active { background: #E9F1FA; color: #00ABE4; }
+        .navbar .right { display: flex; align-items: center; gap: 15px; }
+        .btn-login { background: #00ABE4; color: white; padding: 8px 20px; border-radius: 20px; text-decoration: none; font-weight: 500; }
+        .courses-page { padding: 3rem 2rem; min-height: calc(100vh - 80px); }
+        .courses-container { max-width: 1200px; margin: 0 auto; }
+        .page-header { text-align: center; margin-bottom: 3rem; }
+        .page-header h1 { font-size: 2.5rem; color: #333; margin-bottom: 0.5rem; }
+        .page-header p { color: #666; font-size: 1.1rem; }
+        .courses-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; }
+        .course-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.1); transition: all 0.3s ease; }
+        .course-card:hover { transform: translateY(-10px); box-shadow: 0 20px 50px rgba(0,0,0,0.15); }
+        .course-header { background: linear-gradient(135deg, #00ABE4 0%, #009B4D 100%); padding: 2rem; color: white; }
+        .course-header h3 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .course-header .duration { opacity: 0.9; font-size: 0.9rem; }
+        .course-body { padding: 1.5rem; }
+        .course-info { display: flex; justify-content: space-between; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #eee; }
+        .course-info-item { text-align: center; }
+        .course-info-item span { display: block; font-size: 1.25rem; font-weight: 700; color: #333; }
+        .course-info-item small { color: #666; font-size: 0.8rem; }
+        .course-body p { color: #666; font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem; }
+        .course-footer { padding: 1rem 1.5rem; background: #f9f9f9; display: flex; justify-content: space-between; align-items: center; }
+        .course-fees { font-size: 1.25rem; font-weight: 700; color: #27ae60; }
+        .btn-course { padding: 0.6rem 1.25rem; background: linear-gradient(135deg, #00ABE4 0%, #009B4D 100%); color: white; border: none; border-radius: 8px; font-weight: 600; text-decoration: none; transition: all 0.3s ease; }
+        .btn-course:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3); }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="left">
+            <div class="logo"><i class="fas fa-graduation-cap"></i> EduPortal</div>
+            <div class="links">
+                <a href="/">Home</a>
+                <a href="/courses" class="active">Courses</a>
+                <a href="/merit-list">Merit List</a>
+                <a href="/contact">Contact</a>
+            </div>
+        </div>
+        <div class="right">
+            <a href="/login" class="btn-login">Login</a>
+        </div>
+    </nav>
+
+    <div class="courses-page">
+        <div class="courses-container">
+            <div class="page-header">
+                <h1>Our Courses</h1>
+                <p>Choose your path to success</p>
+            </div>
+            <div class="courses-grid">
+                {% for course_name, course in courses.items() %}
+                <div class="course-card">
+                    <div class="course-header">
+                        <h3>{{ course_name }}</h3>
+                        <span class="duration"><i class="fas fa-clock"></i> {{ course.duration }}</span>
+                    </div>
+                    <div class="course-body">
+                        <div class="course-info">
+                            <div class="course-info-item"><span>{{ course.seats }}</span><small>Seats</small></div>
+                            <div class="course-info-item"><span>{{ course.eligibility[:15] }}...</span><small>Eligibility</small></div>
+                        </div>
+                        <p>{{ course.description }}</p>
+                    </div>
+                    <div class="course-footer">
+                        <span class="course-fees">Rs. {{ "{:,}".format(course.fees) }}/-</span>
+                        <a href="{{ url_for('course_detail', course_name=course_name) }}" class="btn-course">View Details</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

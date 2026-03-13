@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Student Admission Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: #E9F1FA; }
+        .navbar { background: white; padding: 12px 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .navbar .left { display: flex; align-items: center; gap: 30px; }
+        .navbar .logo { color: #00ABE4; font-size: 22px; font-weight: 700; }
+        .navbar .links { display: flex; gap: 20px; }
+        .navbar .links a { color: #333; text-decoration: none; font-weight: 500; padding: 8px 15px; border-radius: 8px; transition: 0.3s; }
+        .navbar .links a:hover, .navbar .links a.active { background: #E9F1FA; color: #00ABE4; }
+        .navbar .right { display: flex; align-items: center; gap: 15px; }
+        .btn-login { background: #00ABE4; color: white; padding: 8px 20px; border-radius: 20px; text-decoration: none; font-weight: 500; }
+        .hero { min-height: calc(100vh - 80px); display: flex; align-items: center; justify-content: center; text-align: center; padding: 2rem; position: relative; overflow: hidden; }
+        .hero::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #00ABE4 0%, #009B4D 50%, #E9F1FA 100%); background-size: 400% 400%; animation: gradientBG 15s ease infinite; z-index: -1; }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .hero-content { max-width: 800px; animation: fadeInUp 1s ease; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .hero h1 { font-size: 3.5rem; color: white; margin-bottom: 1.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+        .hero p { font-size: 1.25rem; color: rgba(255,255,255,0.9); margin-bottom: 2.5rem; line-height: 1.8; }
+        .hero-buttons { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; }
+        .btn { padding: 1rem 2.5rem; border-radius: 50px; font-size: 1.1rem; font-weight: 600; text-decoration: none; transition: all 0.3s ease; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn-primary { background: white; color: #00ABE4; }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .btn-secondary { background: transparent; color: white; border: 2px solid white; }
+        .btn-secondary:hover { background: white; color: #00ABE4; transform: translateY(-3px); }
+        .features { padding: 5rem 2rem; background: #E9F1FA; }
+        .features-container { max-width: 1200px; margin: 0 auto; }
+        .features h2 { text-align: center; font-size: 2.5rem; margin-bottom: 3rem; color: #333; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
+        .feature-card { background: white; padding: 2.5rem; border-radius: 20px; text-align: center; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .feature-card:hover { transform: translateY(-10px); box-shadow: 0 15px 40px rgba(0,0,0,0.1); }
+        .feature-icon { width: 80px; height: 80px; background: linear-gradient(135deg, #00ABE4 0%, #009B4D 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2rem; color: white; }
+        .feature-card h3 { font-size: 1.5rem; margin-bottom: 1rem; color: #333; }
+        .feature-card p { color: #666; line-height: 1.6; }
+        @media (max-width: 768px) { .hero h1 { font-size: 2.5rem; } .hero p { font-size: 1rem; } .hero-buttons { flex-direction: column; } .btn { width: 100%; justify-content: center; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="left">
+            <div class="logo"><i class="fas fa-graduation-cap"></i> EduPortal</div>
+            <div class="links">
+                <a href="/" class="active">Home</a>
+                <a href="/courses">Courses</a>
+                <a href="/merit-list">Merit List</a>
+                <a href="/contact">Contact</a>
+            </div>
+        </div>
+        <div class="right">
+            <a href="/login" class="btn-login">Login</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Welcome to Student Admission Portal</h1>
+            <p>Simplify your admission process with our modern, efficient, and user-friendly platform. Apply online, track your application status, and get admitted to your dream institution.</p>
+            <div class="hero-buttons">
+                <a href="{{ url_for('register') }}" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i> Get Started
+                </a>
+                <a href="{{ url_for('login') }}" class="btn btn-secondary">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="features-container">
+            <h2>Why Choose Our Portal?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3>Quick Application</h3>
+                    <p>Submit your admission application in minutes with our streamlined process.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-upload"></i>
+                    </div>
+                    <h3>Document Upload</h3>
+                    <p>Securely upload all required documents directly through the portal.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <h3>Real-time Updates</h3>
+                    <p>Get instant notifications about your application status via email.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Secure & Private</h3>
+                    <p>Your data is protected with industry-standard security measures.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

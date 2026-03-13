@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ course_name }} - EduPortal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: #E9F1FA; }
+        .navbar { background: white; padding: 12px 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .navbar .left { display: flex; align-items: center; gap: 30px; }
+        .navbar .logo { color: #00ABE4; font-size: 22px; font-weight: 700; }
+        .navbar .links { display: flex; gap: 20px; }
+        .navbar .links a { color: #333; text-decoration: none; font-weight: 500; padding: 8px 15px; border-radius: 8px; transition: 0.3s; }
+        .navbar .links a:hover, .navbar .links a.active { background: #E9F1FA; color: #00ABE4; }
+        .navbar .right { display: flex; align-items: center; gap: 15px; }
+        .btn-login { background: #00ABE4; color: white; padding: 8px 20px; border-radius: 20px; text-decoration: none; font-weight: 500; }
+        .course-detail-page { padding: 3rem 2rem; min-height: calc(100vh - 80px); }
+        .detail-container { max-width: 900px; margin: 0 auto; }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: #666; text-decoration: none; margin-bottom: 2rem; transition: color 0.3s; }
+        .back-link:hover { color: #00ABE4; }
+        .course-hero { background: linear-gradient(135deg, #00ABE4 0%, #009B4D 100%); padding: 3rem; border-radius: 20px; color: white; margin-bottom: 2rem; }
+        .course-hero h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .course-hero .subtitle { opacity: 0.9; font-size: 1.1rem; }
+        .detail-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; }
+        .detail-card { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); margin-bottom: 1.5rem; }
+        .detail-card h3 { font-size: 1.25rem; color: #333; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem; }
+        .detail-card h3 i { color: #00ABE4; }
+        .detail-card ul { list-style: none; }
+        .detail-card ul li { padding: 0.75rem 0; border-bottom: 1px solid #eee; color: #666; display: flex; align-items: center; gap: 0.75rem; }
+        .detail-card ul li:last-child { border-bottom: none; }
+        .detail-card ul li i { color: #27ae60; width: 20px; }
+        .info-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .stat-box { background: #f9f9f9; padding: 1.5rem; border-radius: 15px; text-align: center; }
+        .stat-box .value { font-size: 1.75rem; font-weight: 700; color: #00ABE4; }
+        .stat-box .label { color: #666; font-size: 0.9rem; }
+        .fees-box { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); padding: 2rem; border-radius: 15px; color: white; text-align: center; }
+        .fees-box .amount { font-size: 2.5rem; font-weight: 700; }
+        .fees-box .per { opacity: 0.9; }
+        .apply-box { margin-top: 2rem; }
+        .btn-apply { display: block; width: 100%; padding: 1rem; background: linear-gradient(135deg, #00ABE4 0%, #009B4D 100%); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 600; text-decoration: none; text-align: center; transition: all 0.3s ease; }
+        .btn-apply:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3); }
+        @media (max-width: 768px) { .detail-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="left">
+            <div class="logo"><i class="fas fa-graduation-cap"></i> EduPortal</div>
+            <div class="links">
+                <a href="/">Home</a>
+                <a href="/courses" class="active">Courses</a>
+                <a href="/merit-list">Merit List</a>
+                <a href="/contact">Contact</a>
+            </div>
+        </div>
+        <div class="right">
+            <a href="/login" class="btn-login">Login</a>
+        </div>
+    </nav>
+
+    <div class="course-detail-page">
+        <div class="detail-container">
+            <a href="{{ url_for('courses_page') }}" class="back-link"><i class="fas fa-arrow-left"></i> Back to Courses</a>
+            <div class="course-hero">
+                <h1>{{ course_name }}</h1>
+                <p class="subtitle">{{ course.description }}</p>
+            </div>
+            <div class="detail-grid">
+                <div>
+                    <div class="detail-card">
+                        <h3><i class="fas fa-graduation-cap"></i> Eligibility Criteria</h3>
+                        <p style="color: #666;">{{ course.eligibility }}</p>
+                    </div>
+                    <div class="detail-card">
+                        <h3><i class="fas fa-list-check"></i> What You'll Learn</h3>
+                        <ul>
+                            <li><i class="fas fa-check-circle"></i> Industry-relevant curriculum</li>
+                            <li><i class="fas fa-check-circle"></i> Practical hands-on training</li>
+                            <li><i class="fas fa-check-circle"></i> Expert faculty guidance</li>
+                            <li><i class="fas fa-check-circle"></i> Placement assistance</li>
+                            <li><i class="fas fa-check-circle"></i> Modern infrastructure</li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <div class="detail-card">
+                        <h3><i class="fas fa-info-circle"></i> Course Info</h3>
+                        <div class="info-stats">
+                            <div class="stat-box"><div class="value">{{ course.seats }}</div><div class="label">Seats Available</div></div>
+                            <div class="stat-box"><div class="value">{{ course.duration }}</div><div class="label">Duration</div></div>
+                        </div>
+                    </div>
+                    <div class="fees-box">
+                        <div class="amount">Rs. {{ "{:,}".format(course.fees) }}/-</div>
+                        <div class="per">Per Year</div>
+                    </div>
+                    <div class="apply-box">
+                        <a href="{{ url_for('register') }}" class="btn-apply"><i class="fas fa-user-plus"></i> Apply Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

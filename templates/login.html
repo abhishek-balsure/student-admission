@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - EduPortal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #E9F1FA 0%, #00ABE4 50%, #009B4D 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .login-box { background: white; padding: 40px; border-radius: 20px; width: 100%; max-width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+        .login-box h1 { text-align: center; color: #00ABE4; margin-bottom: 10px; font-size: 28px; }
+        .login-box p { text-align: center; color: #666; margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: #333; }
+        .form-group input { width: 100%; padding: 14px; border: 2px solid #E9F1FA; border-radius: 10px; font-size: 16px; transition: border-color 0.3s; }
+        .form-group input:focus { outline: none; border-color: #00ABE4; }
+        .btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #00ABE4 0%, #009B4D 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; }
+        .btn:hover { transform: translateY(-2px); }
+        .links { text-align: center; margin-top: 20px; }
+        .links a { color: #00ABE4; text-decoration: none; font-weight: 500; }
+        .alert { padding: 12px; border-radius: 8px; margin-bottom: 20px; }
+        .alert-error { background: #fee; color: #c00; border-left: 4px solid #c00; }
+    </style>
+</head>
+<body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <div class="login-box">
+        <h1><i class="fas fa-graduation-cap"></i> EduPortal</h1>
+        <p>Student Login</p>
+        
+        <form method="POST" action="/login">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Enter your password" required>
+            </div>
+            <button type="submit" class="btn">Login</button>
+        </form>
+        
+        <div class="links">
+            <p>Don't have an account? <a href="/register">Register</a></p>
+            <p><a href="/">Back to Home</a></p>
+        </div>
+    </div>
+</body>
+</html>

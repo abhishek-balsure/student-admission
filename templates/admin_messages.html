@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: #E9F1FA; }
+        .navbar { background: white; padding: 12px 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .navbar .logo { color: #00ABE4; font-size: 22px; font-weight: 700; }
+        .navbar .links { display: flex; gap: 15px; }
+        .navbar .links a { color: #333; text-decoration: none; font-weight: 500; padding: 8px 15px; border-radius: 8px; transition: 0.3s; }
+        .navbar .links a:hover, .navbar .links a.active { background: #E9F1FA; color: #00ABE4; }
+        .navbar .logout { background: #dc3545; color: white !important; padding: 8px 20px; border-radius: 20px; }
+        .messages-page { padding: 2rem; min-height: calc(100vh - 80px); }
+        .messages-container { max-width: 1000px; margin: 0 auto; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .page-header h1 { font-size: 1.75rem; color: #1a1a2e; }
+        .back-btn { padding: 0.6rem 1.25rem; background: white; color: #333; border: 2px solid #e0e0e0; border-radius: 8px; text-decoration: none; transition: all 0.3s; }
+        .back-btn:hover { border-color: #00ABE4; color: #00ABE4; }
+        .messages-list { display: flex; flex-direction: column; gap: 1rem; }
+        .message-card { background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .message-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+        .message-from h3 { font-size: 1.1rem; color: #333; margin-bottom: 0.25rem; }
+        .message-from p { color: #666; font-size: 0.85rem; }
+        .message-meta { text-align: right; }
+        .message-meta .date { color: #666; font-size: 0.8rem; }
+        .message-meta .badge { display: inline-block; padding: 0.25rem 0.75rem; background: #27ae60; color: white; border-radius: 20px; font-size: 0.7rem; margin-top: 0.5rem; }
+        .message-subject { font-weight: 600; color: #333; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+        .message-subject i { color: #00ABE4; }
+        .message-text { color: #666; line-height: 1.6; }
+        .empty-state { text-align: center; padding: 4rem; color: #666; }
+        .empty-state i { font-size: 4rem; margin-bottom: 1rem; color: #ccc; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo"><i class="fas fa-user-shield"></i> Admin Panel</div>
+        <div class="links">
+            <a href="/admin/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a href="/admin/messages" class="active"><i class="fas fa-envelope"></i> Messages</a>
+            <a href="/merit-list"><i class="fas fa-list"></i> Merit List</a>
+            <a href="/"><i class="fas fa-home"></i> Home</a>
+        </div>
+        <a href="/logout" class="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </nav>
+
+    <div class="messages-page">
+        <div class="messages-container">
+            <div class="page-header">
+                <h1><i class="fas fa-envelope"></i> Contact Messages</h1>
+                <a href="{{ url_for('admin_dashboard') }}" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+            </div>
+            <div class="messages-list">
+                {% for msg in messages %}
+                <div class="message-card">
+                    <div class="message-header">
+                        <div class="message-from">
+                            <h3>{{ msg.name }}</h3>
+                            <p>{{ msg.email }}</p>
+                        </div>
+                        <div class="message-meta">
+                            <span class="date">{{ msg.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                            {% if msg.replied %}<span class="badge">Replied</span>{% endif %}
+                        </div>
+                    </div>
+                    <div class="message-subject"><i class="fas fa-tag"></i> {{ msg.subject }}</div>
+                    <div class="message-text">{{ msg.message }}</div>
+                </div>
+                {% else %}
+                <div class="empty-state"><i class="fas fa-inbox"></i><p>No messages yet</p></div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
