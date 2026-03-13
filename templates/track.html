@@ -1,0 +1,382 @@
+{% extends "base.html" %}
+
+{% block title %}Track Application{% endblock %}
+
+{% block extra_css %}
+<style>
+    .track-page {
+        min-height: calc(100vh - 250px);
+        padding: 3rem 0;
+        background: linear-gradient(135deg, var(--background) 0%, #e8eaf6 100%);
+    }
+    .track-container {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+    
+    .track-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    .track-header h1 {
+        font-family: 'Playfair Display', serif;
+        color: var(--primary);
+    }
+    
+    .track-card {
+        background: white;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .track-form .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .otp-note {
+        background: rgba(46, 125, 50, 0.1);
+        border: 1px dashed var(--success);
+        border-radius: var(--radius-sm);
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+        font-size: 0.85rem;
+        color: var(--success);
+    }
+    
+    .result-card {
+        background: white;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+    }
+    .result-header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        padding: 1.5rem;
+        color: white;
+    }
+    .result-header h3 {
+        margin: 0;
+        font-family: 'Playfair Display', serif;
+    }
+    .result-body {
+        padding: 2rem;
+    }
+    
+    .applicant-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    @media (max-width: 576px) { .applicant-info { grid-template-columns: 1fr; } }
+    
+    .info-item {
+        padding: 1rem;
+        background: var(--background);
+        border-radius: var(--radius-sm);
+    }
+    .info-item label {
+        display: block;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-bottom: 0.25rem;
+    }
+    .info-item span {
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+    
+    .status-badge-lg {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    .status-registered { background: rgba(108, 117, 125, 0.15); color: #6c757d; }
+    .status-submitted { background: rgba(46, 125, 50, 0.15); color: var(--success); }
+    .status-under_review { background: rgba(249, 168, 37, 0.15); color: var(--warning); }
+    .status-verified { background: rgba(33, 150, 243, 0.15); color: #2196f3; }
+    .status-admitted { background: rgba(46, 125, 50, 0.2); color: var(--success); }
+    .status-rejected { background: rgba(198, 40, 40, 0.15); color: var(--danger); }
+    
+    .stepper {
+        position: relative;
+        padding: 1rem 0;
+    }
+    .stepper::before {
+        content: '';
+        position: absolute;
+        left: 15px;
+        top: 40px;
+        bottom: 40px;
+        width: 3px;
+        background: var(--border-color);
+    }
+    .stepper-item {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+    .step-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        z-index: 1;
+    }
+    .step-icon.completed {
+        background: var(--success);
+        color: white;
+    }
+    .step-icon.current {
+        background: var(--warning);
+        color: white;
+        animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+    .step-icon.pending {
+        background: var(--border-color);
+        color: var(--text-muted);
+    }
+    .step-content h4 {
+        font-size: 0.95rem;
+        color: var(--text-dark);
+        margin: 0 0 0.25rem 0;
+    }
+    .step-content p {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin: 0;
+    }
+    
+    .remarks-box {
+        background: rgba(249, 168, 37, 0.1);
+        border-left: 4px solid var(--warning);
+        padding: 1rem;
+        border-radius: var(--radius-sm);
+        margin-top: 1.5rem;
+    }
+    .remarks-box h5 {
+        color: var(--warning);
+        font-size: 0.9rem;
+        margin: 0 0 0.5rem 0;
+    }
+    .remarks-box p {
+        margin: 0;
+        color: var(--text-dark);
+    }
+    
+    .contact-info {
+        text-align: center;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-color);
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+    .contact-info a {
+        color: var(--primary);
+    }
+    
+    .error-card {
+        background: white;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+        padding: 3rem;
+        text-align: center;
+    }
+    .error-card i {
+        font-size: 4rem;
+        color: var(--danger);
+        margin-bottom: 1rem;
+    }
+    .error-card h3 {
+        color: var(--danger);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="track-page">
+    <div class="track-container">
+        <div class="track-header">
+            <h1 class="section-title text-center">Track Your Application</h1>
+            <p class="text-muted">Sarhad College of Arts, Commerce & Science | Admission 2025-26</p>
+        </div>
+        
+        <div class="track-card">
+            <form method="POST" action="{{ url_for('track_application') }}" class="track-form">
+                <div class="form-group">
+                    <label class="form-label">Track By</label>
+                    <select name="track_type" class="form-control" id="trackType" onchange="toggleTrackFields()">
+                        <option value="app">Application Number</option>
+                        <option value="mobile">Mobile Number</option>
+                    </select>
+                </div>
+                
+                <div id="appFields">
+                    <div class="form-group">
+                        <label class="form-label">Application Number</label>
+                        <input type="text" name="application_no" class="form-control" placeholder="SCAS-2025-XXXXX">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Date of Birth (Security Check)</label>
+                        <input type="date" name="dob" class="form-control">
+                    </div>
+                </div>
+                
+                <div id="mobileFields" style="display:none;">
+                    <div class="form-group">
+                        <label class="form-label">Registered Mobile Number</label>
+                        <input type="tel" name="mobile" class="form-control" placeholder="10-digit mobile number">
+                    </div>
+                    <div class="otp-note">
+                        <i class="fas fa-info-circle me-1"></i> For demo, OTP is: <strong>123456</strong>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Enter OTP</label>
+                        <input type="text" name="otp" class="form-control" placeholder="Enter OTP">
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-search me-2"></i> Track Application
+                </button>
+            </form>
+        </div>
+        
+        {% if error %}
+        <div class="error-card">
+            <i class="fas fa-times-circle"></i>
+            <h3>Application Not Found</h3>
+            <p class="text-muted">{{ error }}</p>
+        </div>
+        {% endif %}
+        
+        {% if result %}
+        <div class="result-card">
+            <div class="result-header">
+                <h3><i class="fas fa-file-alt me-2"></i>Application Status</h3>
+            </div>
+            <div class="result-body">
+                <div class="applicant-info">
+                    <div class="info-item">
+                        <label>Student Name</label>
+                        <span>{{ result.name }}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Application Number</label>
+                        <span>{{ result.student_id }}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Course Applied</label>
+                        <span>{{ result.course }}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Applied On</label>
+                        <span>{{ result.applied_date }}</span>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0">Application Progress</h4>
+                    <span class="status-badge-lg status-{{ result.status }}">
+                        {% if result.status == 'registered' %}Registered
+                        {% elif result.status == 'submitted' %}Form Submitted
+                        {% elif result.status == 'under_review' %}Under Review
+                        {% elif result.status == 'verified' %}Documents Verified
+                        {% elif result.status == 'admitted' %}Admitted
+                        {% elif result.status == 'rejected' %}Rejected
+                        {% else %}Pending{% endif %}
+                    </span>
+                </div>
+                
+                <div class="stepper">
+                    <div class="stepper-item">
+                        <div class="step-icon completed"><i class="fas fa-check"></i></div>
+                        <div class="step-content">
+                            <h4>Registered</h4>
+                            <p>Application created</p>
+                        </div>
+                    </div>
+                    <div class="stepper-item">
+                        <div class="step-icon {% if result.status in ['submitted', 'under_review', 'verified', 'admitted'] %}completed{% elif result.status == 'registered' %}current{% else %}pending{% endif %}">
+                            {% if result.status in ['submitted', 'under_review', 'verified', 'admitted'] %}<i class="fas fa-check"></i>{% else %}<i class="fas fa-clock"></i>{% endif %}
+                        </div>
+                        <div class="step-content">
+                            <h4>Form Submitted</h4>
+                            <p>Application form completed</p>
+                        </div>
+                    </div>
+                    <div class="stepper-item">
+                        <div class="step-icon {% if result.status in ['under_review', 'verified', 'admitted'] %}completed{% elif result.status == 'submitted' %}current{% else %}pending{% endif %}">
+                            {% if result.status in ['under_review', 'verified', 'admitted'] %}<i class="fas fa-check"></i>{% else %}<i class="fas fa-clock"></i>{% endif %}
+                        </div>
+                        <div class="step-content">
+                            <h4>Document Verification</h4>
+                            <p>Documents being verified</p>
+                        </div>
+                    </div>
+                    <div class="stepper-item">
+                        <div class="step-icon {% if result.status == 'verified' %}completed{% elif result.status == 'admitted' %}completed{% elif result.status == 'under_review' %}current{% else %}pending{% endif %}">
+                            {% if result.status in ['verified', 'admitted'] %}<i class="fas fa-check"></i>{% else %}<i class="fas fa-clock"></i>{% endif %}
+                        </div>
+                        <div class="step-content">
+                            <h4>Merit List</h4>
+                            <p>Merit list published</p>
+                        </div>
+                    </div>
+                    <div class="stepper-item">
+                        <div class="step-icon {% if result.status == 'admitted' %}completed{% elif result.status == 'verified' %}current{% else %}pending{% endif %}">
+                            {% if result.status == 'admitted' %}<i class="fas fa-check"></i>{% else %}<i class="fas fa-clock"></i>{% endif %}
+                        </div>
+                        <div class="step-content">
+                            <h4>Admission Confirmed</h4>
+                            <p>Fee paid & admission confirmed</p>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if result.remarks %}
+                <div class="remarks-box">
+                    <h5><i class="fas fa-comment-alt me-1"></i> Admin Remarks</h5>
+                    <p>{{ result.remarks }}</p>
+                </div>
+                {% endif %}
+                
+                <div class="contact-info">
+                    <p>For queries, contact: <a href="mailto:sarhadcollege@gmail.com">sarhadcollege@gmail.com</a> | (020) 24368621</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function toggleTrackFields() {
+        const trackType = document.getElementById('trackType').value;
+        if (trackType === 'app') {
+            document.getElementById('appFields').style.display = 'block';
+            document.getElementById('mobileFields').style.display = 'none';
+        } else {
+            document.getElementById('appFields').style.display = 'none';
+            document.getElementById('mobileFields').style.display = 'block';
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+
+{% block title %}Applications{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-page {
+        min-height: calc(100vh - 250px);
+        padding: 2rem 0;
+        background: var(--background);
+    }
+    .admin-container {
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+    
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    .page-header h1 {
+        font-family: 'Playfair Display', serif;
+        color: var(--primary);
+        margin: 0;
+    }
+    
+    .sidebar {
+        background: white;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 1.5rem;
+    }
+    .sidebar-menu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .sidebar-menu li {
+        margin-bottom: 0.5rem;
+    }
+    .sidebar-menu a {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius-sm);
+        color: var(--text-dark);
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .sidebar-menu a:hover, .sidebar-menu a.active {
+        background: var(--primary);
+        color: white;
+    }
+    
+    .admin-layout {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        gap: 2rem;
+    }
+    @media (max-width: 992px) { .admin-layout { grid-template-columns: 1fr; } }
+    
+    .filters-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        margin-bottom: 1.5rem;
+    }
+    .filters-row {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .filters-row .form-control, .filters-row select {
+        flex: 1;
+        min-width: 150px;
+    }
+    
+    .table-card {
+        background: white;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+    }
+    .table-header {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .bulk-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .applications-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .applications-table th, .applications-table td {
+        padding: 0.75rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .applications-table th {
+        background: var(--background);
+        color: var(--text-muted);
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+    .applications-table tbody tr:hover {
+        background: rgba(26, 35, 126, 0.02);
+    }
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+    .status-draft { background: #e0e0e0; color: #666; }
+    .status-submitted { background: rgba(46, 125, 50, 0.1); color: var(--success); }
+    .status-under_review { background: rgba(249, 168, 37, 0.1); color: var(--warning); }
+    .status-verified { background: rgba(33, 150, 243, 0.1); color: #2196f3; }
+    .status-admitted { background: rgba(46, 125, 50, 0.2); color: var(--success); }
+    .status-rejected { background: rgba(198, 40, 40, 0.1); color: var(--danger); }
+    
+    .doc-status {
+        font-size: 0.8rem;
+    }
+    .doc-status.complete { color: var(--success); }
+    .doc-status.incomplete { color: var(--danger); }
+    
+    .action-btns {
+        display: flex;
+        gap: 0.25rem;
+    }
+    .action-btns a {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <div class="admin-container">
+        <div class="page-header">
+            <h1><i class="fas fa-users me-2"></i> Applications</h1>
+            <div>
+                <a href="{{ url_for('logout') }}" class="btn btn-outline"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
+            </div>
+        </div>
+        
+        <div class="admin-layout">
+            <aside>
+                <div class="sidebar">
+                    <ul class="sidebar-menu">
+                        <li><a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                        <li><a href="{{ url_for('admin_applications') }}" class="active"><i class="fas fa-users"></i> Applications</a></li>
+                        <li><a href="{{ url_for('admin_merit_list') }}"><i class="fas fa-list-ol"></i> Merit List</a></li>
+                        <li><a href="{{ url_for('admin_messages') }}"><i class="fas fa-envelope"></i> Messages</a></li>
+                        <li><a href="{{ url_for('admin_settings') }}"><i class="fas fa-cog"></i> Settings</a></li>
+                    </ul>
+                </div>
+            </aside>
+            
+            <main>
+                <div class="filters-card">
+                    <form method="GET" action="{{ url_for('admin_applications') }}">
+                        <div class="filters-row">
+                            <input type="text" name="search" class="form-control" placeholder="Search by name, app no, mobile..." value="{{ search }}">
+                            <select name="course" class="form-control">
+                                <option value="">All Courses</option>
+                                <option value="BCA" {% if course_filter == 'BCA' %}selected{% endif %}>BCA</option>
+                                <option value="BSc CS" {% if course_filter == 'BSc CS' %}selected{% endif %}>BSc CS</option>
+                                <option value="BA" {% if course_filter == 'BA' %}selected{% endif %}>BA</option>
+                                <option value="BCom" {% if course_filter == 'BCom' %}selected{% endif %}>BCom</option>
+                                <option value="BCom (BM)" {% if course_filter == 'BCom (BM)' %}selected{% endif %}>BCom BM</option>
+                                <option value="BCom (CA)" {% if course_filter == 'BCom (CA)' %}selected{% endif %}>BCom CA</option>
+                            </select>
+                            <select name="status" class="form-control">
+                                <option value="">All Status</option>
+                                <option value="submitted" {% if status_filter == 'submitted' %}selected{% endif %}>Submitted</option>
+                                <option value="under_review" {% if status_filter == 'under_review' %}selected{% endif %}>Under Review</option>
+                                <option value="verified" {% if status_filter == 'verified' %}selected{% endif %}>Verified</option>
+                                <option value="admitted" {% if status_filter == 'admitted' %}selected{% endif %}>Admitted</option>
+                                <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rejected</option>
+                            </select>
+                            <select name="category" class="form-control">
+                                <option value="">All Categories</option>
+                                <option value="General" {% if category_filter == 'General' %}selected{% endif %}>General</option>
+                                <option value="OBC" {% if category_filter == 'OBC' %}selected{% endif %}>OBC</option>
+                                <option value="SC" {% if category_filter == 'SC' %}selected{% endif %}>SC</option>
+                                <option value="ST" {% if category_filter == 'ST' %}selected{% endif %}>ST</option>
+                                <option value="NT" {% if category_filter == 'NT' %}selected{% endif %}>NT</option>
+                            </select>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i> Filter</button>
+                            <a href="{{ url_for('admin_applications') }}" class="btn btn-outline">Reset</a>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="table-card">
+                    <div class="table-header">
+                        <span>Showing {{ applications|length }} applications</span>
+                        <div class="bulk-actions">
+                            <a href="{{ url_for('admin_export_csv') }}" class="btn btn-sm btn-outline"><i class="fas fa-file-csv"></i> CSV</a>
+                            <a href="{{ url_for('admin_export_excel') }}" class="btn btn-sm btn-outline"><i class="fas fa-file-excel"></i> Excel</a>
+                        </div>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table class="applications-table">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="selectAll"></th>
+                                    <th>App No</th>
+                                    <th>Student Name</th>
+                                    <th>Course</th>
+                                    <th>Category</th>
+                                    <th>10th %</th>
+                                    <th>12th %</th>
+                                    <th>Docs</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for app in applications %}
+                                <tr>
+                                    <td><input type="checkbox" class="app-checkbox" value="{{ app.appid }}"></td>
+                                    <td>{{ app.student.student_id }}</td>
+                                    <td>
+                                        <strong>{{ app.student.name }}</strong><br>
+                                        <small class="text-muted">{{ app.student.email }}</small>
+                                    </td>
+                                    <td>{{ app.student.course_pref_1 or app.student.course }}</td>
+                                    <td>{{ app.student.category }}</td>
+                                    <td>{{ app.student.ssc_marks or '-' }}</td>
+                                    <td>{{ app.student.hsc_marks or '-' }}</td>
+                                    <td>
+                                        {% set doc_count = 0 %}
+                                        {% if app.doc_photo %}{% set doc_count = doc_count + 1 %}{% endif %}
+                                        {% if app.doc_signature %}{% set doc_count = doc_count + 1 %}{% endif %}
+                                        {% if app.doc_ssc_marksheet %}{% set doc_count = doc_count + 1 %}{% endif %}
+                                        {% if app.doc_hsc_marksheet %}{% set doc_count = doc_count + 1 %}{% endif %}
+                                        {% if app.doc_aadhaar %}{% set doc_count = doc_count + 1 %}{% endif %}
+                                        <span class="doc-status {% if doc_count >= 5 %}complete{% else %}incomplete{% endif %}">
+                                            {{ doc_count }}/10
+                                        </span>
+                                    </td>
+                                    <td><span class="status-badge status-{{ app.status }}">{{ app.status|title }}</span></td>
+                                    <td>{{ app.submitted_at.strftime('%d-%m-%Y') if app.submitted_at else '-' }}</td>
+                                    <td class="action-btns">
+                                        <a href="{{ url_for('admin_application_detail', appid=app.appid) }}" class="btn btn-sm btn-primary">View</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('selectAll').addEventListener('change', function() {
+        document.querySelectorAll('.app-checkbox').forEach(cb => cb.checked = this.checked);
+    });
+</script>
+{% endblock %}

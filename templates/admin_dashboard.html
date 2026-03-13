@@ -1,102 +1,84 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - EduPortal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Poppins', sans-serif; background: #E9F1FA; }
-        .navbar { background: white; padding: 12px 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
-        .navbar .logo { color: #00ABE4; font-size: 22px; font-weight: 700; }
-        .navbar .links { display: flex; gap: 15px; }
-        .navbar .links a { color: #333; text-decoration: none; font-weight: 500; padding: 8px 15px; border-radius: 8px; transition: 0.3s; }
-        .navbar .links a:hover, .navbar .links a.active { background: #E9F1FA; color: #00ABE4; }
-        .navbar .logout { background: #dc3545; color: white !important; padding: 8px 20px; border-radius: 20px; }
-        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
-        .header h1 { color: #1a1a2e; }
-        .header .actions { display: flex; gap: 10px; }
-        .header a, .header button { background: linear-gradient(135deg, #00ABE4 0%, #009B4D 100%); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; border: none; cursor: pointer; font-weight: 600; }
-        .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 30px; }
-        .stat { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
-        .stat h2 { font-size: 32px; color: #00ABE4; }
-        .stat p { color: #666; font-size: 14px; }
-        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        .card h3 { margin-bottom: 20px; color: #1a1a2e; display: flex; align-items: center; gap: 10px; }
-        .filters { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
-        .filters input, .filters select { padding: 10px; border: 2px solid #E9F1FA; border-radius: 8px; }
-        .filters button { background: #00ABE4; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; }
-        table { width: 100%; border-collapse: collapse; }
-        th { background: linear-gradient(135deg, #00ABE4 0%, #009B4D 100%); color: white; padding: 14px; text-align: left; }
-        td { padding: 12px; border-bottom: 1px solid #eee; }
-        tr:hover { background: #f9f9f9; }
-        .status { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-        .status-paid { background: #d4edda; color: #155724; }
-        .status-pending { background: #fff3cd; color: #856404; }
-        .status-approved { background: #d4edda; color: #155724; }
-        .status-rejected { background: #f8d7da; color: #721c24; }
-        .btn-sm { padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 12px; margin-right: 5px; display: inline-block; }
-        .btn-view { background: #00ABE4; color: white; }
-        .btn-approve { background: #28a745; color: white; }
-        .btn-reject { background: #dc3545; color: white; }
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-        .tab { padding: 10px 20px; background: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; color: #666; }
-        .tab.active { background: #00ABE4; color: white; }
-    </style>
-</head>
-<body>
-    <nav class="navbar">
-        <div class="logo"><i class="fas fa-user-shield"></i> Admin Panel</div>
-        <div class="links">
-            <a href="/admin/dashboard" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-            <a href="/admin/messages"><i class="fas fa-envelope"></i> Messages</a>
-            <a href="/merit-list"><i class="fas fa-list"></i> Merit List</a>
-            <a href="/"><i class="fas fa-home"></i> Home</a>
-        </div>
-        <a href="/logout" class="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
-    </nav>
-    
-    <div class="container">
-        <div class="header">
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Sarhad College{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-page { padding: 2rem; }
+    .stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 2rem; }
+    .stat-card { background: white; padding: 1.5rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); text-align: center; }
+    .stat-card h2 { font-size: 2rem; color: var(--primary); margin-bottom: 0.5rem; }
+    .stat-card p { color: var(--text-muted); font-size: 0.9rem; }
+    .status { padding: 0.3rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+    .status-paid { background: rgba(46, 125, 50, 0.15); color: var(--success); }
+    .status-pending { background: rgba(249, 168, 37, 0.15); color: var(--warning); }
+    .status-approved { background: rgba(46, 125, 50, 0.15); color: var(--success); }
+    .status-rejected { background: rgba(198, 40, 40, 0.15); color: var(--danger); }
+    .btn-action { padding: 0.4rem 0.75rem; border-radius: var(--radius-sm); text-decoration: none; font-size: 0.8rem; margin-right: 0.25rem; display: inline-block; }
+    .btn-view { background: var(--primary); color: white; }
+    .btn-approve { background: var(--success); color: white; }
+    .btn-reject { background: var(--danger); color: white; }
+    .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+    .admin-header h1 { color: var(--primary); font-family: 'Playfair Display', serif; }
+    .filters { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .filters .form-control { flex: 2; }
+    @media (max-width: 768px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="admin-page">
+        <div class="admin-header">
             <h1><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h1>
-            <div class="actions">
-                <a href="/admin/export/csv"><i class="fas fa-download"></i> Export CSV</a>
+            <a href="/admin/export/csv" class="btn btn-primary"><i class="fas fa-download"></i> Export CSV</a>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h2>{{ stats.total }}</h2>
+                <p><i class="fas fa-users"></i> Total Students</p>
+            </div>
+            <div class="stat-card">
+                <h2>{{ stats.paid }}</h2>
+                <p><i class="fas fa-credit-card"></i> Paid</p>
+            </div>
+            <div class="stat-card">
+                <h2>{{ stats.pending }}</h2>
+                <p><i class="fas fa-clock"></i> Pending App</p>
+            </div>
+            <div class="stat-card">
+                <h2>{{ stats.approved }}</h2>
+                <p><i class="fas fa-check"></i> Approved</p>
+            </div>
+            <div class="stat-card">
+                <h2>{{ stats.rejected }}</h2>
+                <p><i class="fas fa-times"></i> Rejected</p>
             </div>
         </div>
         
-        <div class="stats">
-            <div class="stat"><h2>{{ stats.total }}</h2><p><i class="fas fa-users"></i> Total Students</p></div>
-            <div class="stat"><h2>{{ stats.paid }}</h2><p><i class="fas fa-credit-card"></i> Paid</p></div>
-            <div class="stat"><h2>{{ stats.pending }}</h2><p><i class="fas fa-clock"></i> Pending App</p></div>
-            <div class="stat"><h2>{{ stats.approved }}</h2><p><i class="fas fa-check"></i> Approved</p></div>
-            <div class="stat"><h2>{{ stats.rejected }}</h2><p><i class="fas fa-times"></i> Rejected</p></div>
-        </div>
-        
-        <div class="card">
-            <h3><i class="fas fa-search"></i> Search & Filter</h3>
+        <div class="card-elevated mb-4">
+            <h3 class="mb-3"><i class="fas fa-search"></i> Search & Filter</h3>
             <form method="GET" action="/admin/dashboard" class="filters">
-                <input type="text" name="search" placeholder="Search by name, email, ID..." value="{{ search_query }}" style="flex:2;">
-                <select name="course">
+                <input type="text" name="search" class="form-control" placeholder="Search by name, email, ID..." value="{{ search_query }}">
+                <select name="course" class="form-control">
                     <option value="">All Courses</option>
                     {% for c in courses %}<option value="{{ c }}" {% if course_filter==c %}selected{% endif %}>{{ c }}</option>{% endfor %}
                 </select>
-                <select name="status">
+                <select name="status" class="form-control">
                     <option value="">All Status</option>
                     <option value="pending" {% if status_filter=='pending' %}selected{% endif %}>Pending</option>
                     <option value="approved" {% if status_filter=='approved' %}selected{% endif %}>Approved</option>
                     <option value="rejected" {% if status_filter=='rejected' %}selected{% endif %}>Rejected</option>
                 </select>
-                <button type="submit"><i class="fas fa-filter"></i> Filter</button>
-                <a href="/admin/dashboard" style="padding:10px 20px;background:#666;color:white;text-decoration:none;border-radius:8px;">Reset</a>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i> Filter</button>
+                <a href="/admin/dashboard" class="btn btn-outline">Reset</a>
             </form>
         </div>
         
-        <div class="card">
-            <h3><i class="fas fa-users"></i> Students ({{ applications|length }})</h3>
-            <table>
+        <div class="card-elevated">
+            <h3 class="mb-3"><i class="fas fa-users"></i> Students ({{ applications|length }})</h3>
+            <table class="table">
                 <thead>
                     <tr><th>Name/Email</th><th>Course</th><th>Payment</th><th>Application</th><th>Status</th><th>Actions</th></tr>
                 </thead>
@@ -105,7 +87,7 @@
                     <tr>
                         <td>
                             <strong>{{ student.name }}</strong><br>
-                            <small style="color:#666;">{{ student.email }}</small>
+                            <small class="text-muted">{{ student.email }}</small>
                         </td>
                         <td>{{ student.course }}</td>
                         <td><span class="status status-{{ student.payment_status }}">{{ student.payment_status }}</span></td>
@@ -114,8 +96,8 @@
                         <td>
                             {% if application %}
                                 {% if application.status == 'pending' %}
-                                <a href="/admin/update-status/{{ application.appid }}/approved" class="btn-sm btn-approve">Approve</a>
-                                <a href="/admin/update-status/{{ application.appid }}/rejected" class="btn-sm btn-reject">Reject</a>
+                                <a href="/admin/update-status/{{ application.appid }}/approved" class="btn-action btn-approve">Approve</a>
+                                <a href="/admin/update-status/{{ application.appid }}/rejected" class="btn-action btn-reject">Reject</a>
                                 {% endif %}
                             {% endif %}
                         </td>
@@ -125,5 +107,5 @@
             </table>
         </div>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

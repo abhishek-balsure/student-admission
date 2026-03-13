@@ -1,110 +1,87 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Details - Admin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Poppins', sans-serif; background: #E9F1FA; }
-        .navbar { background: white; padding: 12px 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
-        .navbar .logo { color: #00ABE4; font-size: 22px; font-weight: 700; }
-        .navbar .links { display: flex; gap: 15px; }
-        .navbar .links a { color: #333; text-decoration: none; font-weight: 500; padding: 8px 15px; border-radius: 8px; transition: 0.3s; }
-        .navbar .links a:hover, .navbar .links a.active { background: #E9F1FA; color: #00ABE4; }
-        .navbar .logout { background: #dc3545; color: white !important; padding: 8px 20px; border-radius: 20px; }
-        .detail-page { padding: 2rem; min-height: calc(100vh - 80px); }
-        .detail-container { max-width: 900px; margin: 0 auto; }
-        .back-btn { display: inline-flex; align-items: center; gap: 0.5rem; color: #666; text-decoration: none; margin-bottom: 1.5rem; transition: color 0.3s; }
-        .back-btn:hover { color: #00ABE4; }
-        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-        .detail-card { background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .detail-card.full { grid-column: span 2; }
-        .detail-card h3 { font-size: 1rem; color: #00ABE4; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid #eee; }
-        .info-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #eee; }
-        .info-row:last-child { border-bottom: none; }
-        .info-label { color: #666; }
-        .info-value { font-weight: 600; color: #333; }
-        .action-buttons { display: flex; gap: 1rem; margin-top: 1rem; }
-        .btn-action { padding: 0.6rem 1.25rem; border-radius: 8px; font-weight: 600; text-decoration: none; transition: all 0.3s; display: inline-flex; align-items: center; gap: 0.5rem; }
-        .btn-approve { background: #009B4D; color: white; }
-        .btn-approve:hover { background: #007a3d; }
-        .btn-reject { background: #e74c3c; color: white; }
-        .btn-reject:hover { background: #c0392b; }
-        .btn-delete { background: #95a5a6; color: white; }
-        .btn-delete:hover { background: #7f8c8d; }
-        @media (max-width: 768px) { .detail-grid { grid-template-columns: 1fr; } .detail-card.full { grid-column: span 1; } }
-    </style>
-</head>
-<body>
-    <nav class="navbar">
-        <div class="logo"><i class="fas fa-user-shield"></i> Admin Panel</div>
-        <div class="links">
-            <a href="/admin/dashboard" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-            <a href="/admin/messages"><i class="fas fa-envelope"></i> Messages</a>
-            <a href="/merit-list"><i class="fas fa-list"></i> Merit List</a>
-            <a href="/"><i class="fas fa-home"></i> Home</a>
-        </div>
-        <a href="/logout" class="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
-    </nav>
+{% extends "base.html" %}
 
+{% block title %}Student Details - Sarhad College Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    .detail-page { padding: 2rem; min-height: calc(100vh - 250px); }
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .detail-card { background: white; padding: 1.5rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); }
+    .detail-card.full { grid-column: span 2; }
+    .detail-card h3 { font-size: 1rem; color: var(--primary); margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--border-color); font-family: 'Playfair Display', serif; }
+    .info-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border-color); }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { color: var(--text-muted); }
+    .info-value { font-weight: 600; color: var(--text-dark); }
+    .action-buttons { display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap; }
+    .btn-action { padding: 0.6rem 1.25rem; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; transition: var(--transition); display: inline-flex; align-items: center; gap: 0.5rem; }
+    .btn-approve { background: var(--success); color: white; }
+    .btn-approve:hover { background: #1b5e20; }
+    .btn-reject { background: var(--danger); color: white; }
+    .btn-reject:hover { background: #b71c1c; }
+    .btn-delete { background: var(--text-muted); color: white; }
+    .btn-delete:hover { background: #424242; }
+    @media (max-width: 768px) { .detail-grid { grid-template-columns: 1fr; } .detail-card.full { grid-column: span 1; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
     <div class="detail-page">
-        <div class="detail-container">
-            <a href="{{ url_for('admin_dashboard') }}" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
-            
-            <div class="detail-grid">
-                <div class="detail-card">
-                    <h3><i class="fas fa-user"></i> Personal Details</h3>
-                    <div class="info-row"><span class="info-label">Name</span><span class="info-value">{{ student.name }}</span></div>
-                    <div class="info-row"><span class="info-label">Email</span><span class="info-value">{{ student.email }}</span></div>
-                    <div class="info-row"><span class="info-label">Contact</span><span class="info-value">{{ student.contact }}</span></div>
-                    <div class="info-row"><span class="info-label">DOB</span><span class="info-value">{{ student.dob or 'N/A' }}</span></div>
-                    <div class="info-row"><span class="info-label">Gender</span><span class="info-value">{{ student.gender or 'N/A' }}</span></div>
-                    <div class="info-row"><span class="info-label">Address</span><span class="info-value">{{ student.address or 'N/A' }}</span></div>
-                </div>
-                
-                <div class="detail-card">
-                    <h3><i class="fas fa-graduation-cap"></i> Academic Details</h3>
-                    <div class="info-row"><span class="info-label">10th School</span><span class="info-value">{{ student.tenth_school or 'N/A' }}</span></div>
-                    <div class="info-row"><span class="info-label">10th Marks</span><span class="info-value">{{ student.tenth_marks }}%</span></div>
-                    <div class="info-row"><span class="info-label">12th School</span><span class="info-value">{{ student.twelfth_school or 'N/A' }}</span></div>
-                    <div class="info-row"><span class="info-label">12th Marks</span><span class="info-value">{{ student.twelfth_marks }}%</span></div>
-                    <div class="info-row"><span class="info-label">Entrance Score</span><span class="info-value">{{ student.entrance_score or 'N/A' }}</span></div>
-                    <div class="info-row"><span class="info-label">Merit Rank</span><span class="info-value">{{ student.merit_rank or 'N/A' }}</span></div>
-                </div>
-                
-                <div class="detail-card">
-                    <h3><i class="fas fa-credit-card"></i> Payment Details</h3>
-                    <div class="info-row"><span class="info-label">Status</span><span class="info-value" style="color: {{ 'green' if student.payment_status == 'paid' else 'orange' }};">{{ student.payment_status|upper }}</span></div>
-                    <div class="info-row"><span class="info-label">Payment ID</span><span class="info-value">{{ student.payment_id or 'N/A' }}</span></div>
-                    <div class="info-row"><span class="info-label">Amount</span><span class="info-value">Rs. {{ student.payment_amount }}</span></div>
-                </div>
-                
-                <div class="detail-card">
-                    <h3><i class="fas fa-clipboard-check"></i> Application Details</h3>
-                    <div class="info-row"><span class="info-label">Course</span><span class="info-value">{{ student.course }}</span></div>
-                    <div class="info-row"><span class="info-label">Course Fees</span><span class="info-value">Rs. {{ "{:,}".format(courses[student.course].fees) }}</span></div>
-                    <div class="info-row"><span class="info-label">Application ID</span><span class="info-value">{{ application.appid if application else 'N/A' }}</span></div>
-                    <div class="info-row"><span class="info-label">Status</span><span class="info-value" style="color: {% if application and application.status == 'approved' %}green{% elif application and application.status == 'rejected' %}red{% else %}orange{% endif %};">{{ application.status|upper if application else 'N/A' }}</span></div>
-                    <div class="info-row"><span class="info-label">Submitted</span><span class="info-value">{{ application.submitted_at.strftime('%Y-%m-%d') if application else 'N/A' }}</span></div>
-                </div>
-                
-                {% if application %}
-                <div class="detail-card full">
-                    <h3><i class="fas fa-cogs"></i> Actions</h3>
-                    <div class="action-buttons">
-                        {% if application.status == 'pending' %}
-                        <a href="{{ url_for('update_status', appid=application.appid, status='approved') }}" class="btn-action btn-approve"><i class="fas fa-check"></i> Approve</a>
-                        <a href="{{ url_for('update_status', appid=application.appid, status='rejected') }}" class="btn-action btn-reject"><i class="fas fa-times"></i> Reject</a>
-                        {% endif %}
-                        <a href="{{ url_for('delete_student', student_id=student.student_id) }}" class="btn-action btn-delete" onclick="return confirm('Are you sure?')"><i class="fas fa-trash"></i> Delete Student</a>
-                    </div>
-                </div>
-                {% endif %}
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline mb-4 d-inline-flex align-items-center gap-2">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+        
+        <div class="detail-grid">
+            <div class="detail-card">
+                <h3><i class="fas fa-user"></i> Personal Details</h3>
+                <div class="info-row"><span class="info-label">Name</span><span class="info-value">{{ student.name }}</span></div>
+                <div class="info-row"><span class="info-label">Email</span><span class="info-value">{{ student.email }}</span></div>
+                <div class="info-row"><span class="info-label">Contact</span><span class="info-value">{{ student.contact }}</span></div>
+                <div class="info-row"><span class="info-label">DOB</span><span class="info-value">{{ student.dob or 'N/A' }}</span></div>
+                <div class="info-row"><span class="info-label">Gender</span><span class="info-value">{{ student.gender or 'N/A' }}</span></div>
+                <div class="info-row"><span class="info-label">Address</span><span class="info-value">{{ student.address or 'N/A' }}</span></div>
             </div>
+            
+            <div class="detail-card">
+                <h3><i class="fas fa-graduation-cap"></i> Academic Details</h3>
+                <div class="info-row"><span class="info-label">10th School</span><span class="info-value">{{ student.tenth_school or 'N/A' }}</span></div>
+                <div class="info-row"><span class="info-label">10th Marks</span><span class="info-value">{{ student.tenth_marks }}%</span></div>
+                <div class="info-row"><span class="info-label">12th School</span><span class="info-value">{{ student.twelfth_school or 'N/A' }}</span></div>
+                <div class="info-row"><span class="info-label">12th Marks</span><span class="info-value">{{ student.twelfth_marks }}%</span></div>
+                <div class="info-row"><span class="info-label">Entrance Score</span><span class="info-value">{{ student.entrance_score or 'N/A' }}</span></div>
+                <div class="info-row"><span class="info-label">Merit Rank</span><span class="info-value">{{ student.merit_rank or 'N/A' }}</span></div>
+            </div>
+            
+            <div class="detail-card">
+                <h3><i class="fas fa-credit-card"></i> Payment Details</h3>
+                <div class="info-row"><span class="info-label">Status</span><span class="info-value" style="color: {{ 'var(--success)' if student.payment_status == 'paid' else 'var(--warning)' }};">{{ student.payment_status|upper }}</span></div>
+                <div class="info-row"><span class="info-label">Payment ID</span><span class="info-value">{{ student.payment_id or 'N/A' }}</span></div>
+                <div class="info-row"><span class="info-label">Amount</span><span class="info-value">Rs. {{ student.payment_amount }}</span></div>
+            </div>
+            
+            <div class="detail-card">
+                <h3><i class="fas fa-clipboard-check"></i> Application Details</h3>
+                <div class="info-row"><span class="info-label">Course</span><span class="info-value">{{ student.course }}</span></div>
+                <div class="info-row"><span class="info-label">Course Fees</span><span class="info-value">Rs. {{ "{:,}".format(courses[student.course].fees) }}</span></div>
+                <div class="info-row"><span class="info-label">Application ID</span><span class="info-value">{{ application.appid if application else 'N/A' }}</span></div>
+                <div class="info-row"><span class="info-label">Status</span><span class="info-value" style="color: {% if application and application.status == 'approved' %}var(--success){% elif application and application.status == 'rejected' %}var(--danger){% else %}var(--warning){% endif %};">{{ application.status|upper if application else 'N/A' }}</span></div>
+                <div class="info-row"><span class="info-label">Submitted</span><span class="info-value">{{ application.submitted_at.strftime('%Y-%m-%d') if application else 'N/A' }}</span></div>
+            </div>
+            
+            {% if application %}
+            <div class="detail-card full">
+                <h3><i class="fas fa-cogs"></i> Actions</h3>
+                <div class="action-buttons">
+                    {% if application.status == 'pending' %}
+                    <a href="{{ url_for('update_status', appid=application.appid, status='approved') }}" class="btn-action btn-approve"><i class="fas fa-check"></i> Approve</a>
+                    <a href="{{ url_for('update_status', appid=application.appid, status='rejected') }}" class="btn-action btn-reject"><i class="fas fa-times"></i> Reject</a>
+                    {% endif %}
+                    <a href="{{ url_for('delete_student', student_id=student.student_id) }}" class="btn-action btn-delete" onclick="return confirm('Are you sure?')"><i class="fas fa-trash"></i> Delete Student</a>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

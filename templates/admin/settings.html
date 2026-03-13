@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-page {
+        min-height: calc(100vh - 250px);
+        padding: 2rem 0;
+        background: var(--background);
+    }
+    .admin-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    .page-header h1 {
+        font-family: 'Playfair Display', serif;
+        color: var(--primary);
+        margin: 0;
+    }
+    
+    .sidebar {
+        background: white;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 1.5rem;
+    }
+    .sidebar-menu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .sidebar-menu li {
+        margin-bottom: 0.5rem;
+    }
+    .sidebar-menu a {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius-sm);
+        color: var(--text-dark);
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .sidebar-menu a:hover, .sidebar-menu a.active {
+        background: var(--primary);
+        color: white;
+    }
+    
+    .admin-layout {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        gap: 2rem;
+    }
+    @media (max-width: 992px) { .admin-layout { grid-template-columns: 1fr; } }
+    
+    .settings-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        margin-bottom: 1.5rem;
+    }
+    .settings-card h3 {
+        font-family: 'Playfair Display', serif;
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid var(--border-color);
+    }
+    
+    .course-seats-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .course-seats-table th, .course-seats-table td {
+        padding: 0.75rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .course-seats-table th {
+        background: var(--background);
+        color: var(--text-muted);
+    }
+    
+    .date-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <div class="admin-container">
+        <div class="page-header">
+            <h1><i class="fas fa-cog me-2"></i> Settings</h1>
+            <a href="{{ url_for('logout') }}" class="btn btn-outline"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
+        </div>
+        
+        <div class="admin-layout">
+            <aside>
+                <div class="sidebar">
+                    <ul class="sidebar-menu">
+                        <li><a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                        <li><a href="{{ url_for('admin_applications') }}"><i class="fas fa-users"></i> Applications</a></li>
+                        <li><a href="{{ url_for('admin_merit_list') }}"><i class="fas fa-list-ol"></i> Merit List</a></li>
+                        <li><a href="{{ url_for('admin_messages') }}"><i class="fas fa-envelope"></i> Messages</a></li>
+                        <li><a href="{{ url_for('admin_settings') }}" class="active"><i class="fas fa-cog"></i> Settings</a></li>
+                    </ul>
+                </div>
+            </aside>
+            
+            <main>
+                <form method="POST" action="{{ url_for('admin_save_settings') }}">
+                    <div class="settings-card">
+                        <h3><i class="fas fa-chair me-2"></i> Course Seats Management</h3>
+                        <table class="course-seats-table">
+                            <thead>
+                                <tr>
+                                    <th>Course</th>
+                                    <th>Total Seats</th>
+                                    <th>Available</th>
+                                    <th>Fees (₹)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for course, info in courses.items() %}
+                                <tr>
+                                    <td>{{ course }}</td>
+                                    <td><input type="number" name="seats_{{ course }}" class="form-control" value="{{ info.seats }}"></td>
+                                    <td><input type="number" name="available_{{ course }}" class="form-control" value="{{ info.seats }}"></td>
+                                    <td><input type="number" name="fees_{{ course }}" class="form-control" value="{{ info.fees }}"></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="settings-card">
+                        <h3><i class="fas fa-calendar me-2"></i> Admission Dates</h3>
+                        <div class="date-row">
+                            <div class="form-group">
+                                <label class="form-label">Registration Start Date</label>
+                                <input type="date" name="reg_start" class="form-control" value="{{ settings.reg_start }}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Registration End Date</label>
+                                <input type="date" name="reg_end" class="form-control" value="{{ settings.reg_end }}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Document Verification Date</label>
+                                <input type="date" name="doc_verify" class="form-control" value="{{ settings.doc_verify }}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Merit List Date</label>
+                                <input type="date" name="merit_date" class="form-control" value="{{ settings.merit_date }}">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-card">
+                        <h3><i class="fas fa-bullhorn me-2"></i> Announcement</h3>
+                        <div class="form-group">
+                            <label class="form-label">Marquee Text</label>
+                            <input type="text" name="announcement" class="form-control" value="{{ settings.announcement }}">
+                        </div>
+                    </div>
+                    
+                    <div class="settings-card">
+                        <h3><i class="fas fa-user-shield me-2"></i> Admin Password</h3>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label">Current Password</label>
+                                    <input type="password" name="current_password" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label">New Password</label>
+                                    <input type="password" name="new_password" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="form-label">Confirm Password</label>
+                                    <input type="password" name="confirm_password" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i> Save Settings</button>
+                </form>
+            </main>
+        </div>
+    </div>
+</div>
+{% endblock %}

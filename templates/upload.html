@@ -1,0 +1,412 @@
+{% extends "base.html" %}
+
+{% block title %}Document Upload{% endblock %}
+
+{% block extra_css %}
+<style>
+    .upload-page {
+        min-height: calc(100vh - 250px);
+        padding: 2rem 0;
+        background: var(--background);
+    }
+    .upload-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    .upload-card {
+        background: white;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+    }
+    .upload-header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        padding: 1.5rem 2rem;
+        color: white;
+    }
+    .upload-header h2 {
+        font-family: 'Playfair Display', serif;
+        margin-bottom: 0.5rem;
+    }
+    .upload-header p {
+        opacity: 0.9;
+        font-size: 0.9rem;
+    }
+    
+    .student-info-bar {
+        background: rgba(26, 35, 126, 0.05);
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .student-info-bar .info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .student-info-bar .info-item i {
+        color: var(--primary);
+    }
+    .student-info-bar .app-no {
+        background: var(--primary);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+    }
+    
+    .progress-section {
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .progress-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+    }
+    .progress-header h4 {
+        color: var(--text-dark);
+        margin: 0;
+    }
+    .progress-count {
+        font-weight: 600;
+        color: var(--primary);
+    }
+    .progress-bar-container {
+        height: 10px;
+        background: var(--border-color);
+        border-radius: 50px;
+        overflow: hidden;
+    }
+    .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+        border-radius: 50px;
+        transition: width 0.5s ease;
+    }
+    
+    .documents-section {
+        padding: 2rem;
+    }
+    .document-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+    @media (max-width: 768px) {
+        .document-grid { grid-template-columns: 1fr; }
+    }
+    
+    .document-slot {
+        border: 2px dashed var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        background: var(--background);
+    }
+    .document-slot:hover {
+        border-color: var(--primary);
+    }
+    .document-slot.uploaded {
+        border-style: solid;
+        border-color: var(--success);
+        background: rgba(46, 125, 50, 0.05);
+    }
+    .document-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+    .document-name {
+        font-weight: 600;
+        color: var(--text-dark);
+        font-size: 0.95rem;
+    }
+    .document-name .doc-number {
+        color: var(--primary);
+        margin-right: 0.5rem;
+    }
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    .status-required {
+        background: rgba(198, 40, 40, 0.1);
+        color: var(--danger);
+    }
+    .status-optional {
+        background: rgba(108, 117, 125, 0.1);
+        color: var(--text-muted);
+    }
+    .status-uploaded {
+        background: rgba(46, 125, 50, 0.1);
+        color: var(--success);
+    }
+    
+    .document-formats {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+    }
+    .document-formats span {
+        color: var(--primary);
+    }
+    
+    .upload-area {
+        text-align: center;
+    }
+    .file-input {
+        display: none;
+    }
+    .upload-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .upload-btn:hover {
+        background: var(--primary-dark);
+    }
+    .upload-btn:disabled {
+        background: var(--border-color);
+        cursor: not-allowed;
+    }
+    
+    .uploaded-file {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: white;
+        padding: 1rem;
+        border-radius: var(--radius-sm);
+        margin-top: 1rem;
+    }
+    .file-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    .file-info i {
+        font-size: 1.5rem;
+        color: var(--success);
+    }
+    .file-details .filename {
+        font-weight: 500;
+        color: var(--text-dark);
+        font-size: 0.9rem;
+    }
+    .file-details .filesize {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+    .remove-btn {
+        background: none;
+        border: none;
+        color: var(--danger);
+        cursor: pointer;
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+    .remove-btn:hover {
+        color: #a11b1b;
+    }
+    
+    .success-box {
+        text-align: center;
+        padding: 3rem 2rem;
+    }
+    .success-box i {
+        font-size: 4rem;
+        color: var(--success);
+        margin-bottom: 1rem;
+    }
+    .success-box h3 {
+        color: var(--success);
+    }
+    
+    .alert-box {
+        padding: 1rem;
+        border-radius: var(--radius-sm);
+        margin-bottom: 1rem;
+    }
+    .alert-warning {
+        background: rgba(249, 168, 37, 0.1);
+        border-left: 4px solid var(--warning);
+        color: #b07d0f;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="upload-page">
+    <div class="upload-container">
+        <div class="upload-card">
+            <div class="upload-header">
+                <h2><i class="fas fa-cloud-upload-alt"></i> Document Upload</h2>
+                <p>Sarhad College of Arts, Commerce & Science | Academic Year 2025-26</p>
+            </div>
+            
+            {% if not application or application.status != 'submitted' %}
+            <div class="alert-box alert-warning">
+                <i class="fas fa-exclamation-triangle"></i> 
+                Please complete and submit your application form first before uploading documents.
+                <a href="{{ url_for('apply') }}" class="btn btn-primary btn-sm ms-2">Fill Application Form</a>
+            </div>
+            {% else %}
+            
+            <div class="student-info-bar">
+                <div class="info-item">
+                    <i class="fas fa-user"></i>
+                    <span>{{ student.name }}</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>{{ student.email }}</span>
+                </div>
+                <div class="app-no">
+                    <i class="fas fa-file-alt"></i> {{ application.appid }}
+                </div>
+            </div>
+            
+            <div class="progress-section">
+                <div class="progress-header">
+                    <h4>Upload Progress</h4>
+                    <span class="progress-count">{{ uploaded_count }} of {{ documents|length }} documents uploaded</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: {{ (uploaded_count / documents|length * 100)|int }}%"></div>
+                </div>
+            </div>
+            
+            <form method="POST" enctype="multipart/form-data" id="uploadForm">
+                <div class="documents-section">
+                    <div class="document-grid">
+                        {% for doc in documents %}
+                        <div class="document-slot {% if doc.uploaded %}uploaded{% endif %}" id="slot-{{ doc.id }}">
+                            <div class="document-header">
+                                <div class="document-name">
+                                    <span class="doc-number">{{ loop.index }}.</span>
+                                    {{ doc.name }}
+                                </div>
+                                <span class="status-badge {% if doc.required %}status-required{% else %}status-optional{% endif %}">
+                                    {% if doc.required %}Required{% else %}Optional{% endif %}
+                                </span>
+                            </div>
+                            
+                            <div class="document-formats">
+                                Formats: <span>{{ doc.formats }}</span> | Max: <span>{{ doc.max_size }}</span>
+                            </div>
+                            
+                            {% if doc.uploaded %}
+                            <div class="uploaded-file">
+                                <div class="file-info">
+                                    <i class="fas fa-check-circle"></i>
+                                    <div class="file-details">
+                                        <div class="filename">{{ doc.filename }}</div>
+                                        <div class="filesize">{{ doc.file_size }}</div>
+                                    </div>
+                                </div>
+                                <button type="button" class="remove-btn" onclick="removeFile('{{ doc.id }}')">
+                                    <i class="fas fa-trash"></i> Remove
+                                </button>
+                            </div>
+                            {% else %}
+                            <div class="upload-area">
+                                <input type="file" name="{{ doc.id }}" id="file-{{ doc.id }}" 
+                                    accept="{{ doc.accept }}" class="file-input" 
+                                    onchange="handleFileSelect(this, '{{ doc.id }}', '{{ doc.max_bytes }}')">
+                                <label for="file-{{ doc.id }}" class="upload-btn">
+                                    <i class="fas fa-upload"></i> Choose File
+                                </label>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </form>
+            
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function handleFileSelect(input, docId, maxBytes) {
+        const file = input.files[0];
+        if (!file) return;
+        
+        const maxSize = parseInt(maxBytes);
+        if (file.size > maxSize) {
+            alert('File size exceeds maximum limit of ' + (maxSize / 1024 / 1024) + 'MB');
+            input.value = '';
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('document_id', docId);
+        formData.append('file', file);
+        
+        fetch('{{ url_for("upload") }}', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.message || 'Upload failed');
+                input.value = '';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Upload failed. Please try again.');
+            input.value = '';
+        });
+    }
+    
+    function removeFile(docId) {
+        if (!confirm('Are you sure you want to remove this document?')) return;
+        
+        fetch('{{ url_for("upload") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ remove: true, document_id: docId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.message || 'Failed to remove document');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to remove document');
+        });
+    }
+</script>
+{% endblock %}

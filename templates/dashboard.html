@@ -1,0 +1,580 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-page {
+        min-height: calc(100vh - 250px);
+        padding: 2rem 0;
+        background: var(--background);
+    }
+    .dashboard-container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    .header-card {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        color: white;
+        margin-bottom: 2rem;
+    }
+    .header-content {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+    .profile-photo {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        color: var(--primary);
+        overflow: hidden;
+        border: 3px solid white;
+    }
+    .profile-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .student-info {
+        flex: 1;
+    }
+    .student-info h2 {
+        font-family: 'Playfair Display', serif;
+        margin-bottom: 0.5rem;
+    }
+    .student-info .app-no {
+        opacity: 0.9;
+        font-size: 1rem;
+    }
+    .status-badge-large {
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    .status-submitted { background: rgba(46, 125, 50, 0.2); color: #4caf50; }
+    .status-under-review { background: rgba(249, 168, 37, 0.2); color: #ffc107; }
+    .status-verified { background: rgba(33, 150, 243, 0.2); color: #2196f3; }
+    .status-merit { background: rgba(156, 39, 176, 0.2); color: #9c27b0; }
+    .status-admitted { background: rgba(46, 125, 50, 0.2); color: #4caf50; }
+    .status-rejected { background: rgba(198, 40, 40, 0.2); color: #f44336; }
+    
+    .dashboard-layout {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        gap: 2rem;
+    }
+    @media (max-width: 992px) {
+        .dashboard-layout { grid-template-columns: 1fr; }
+    }
+    
+    .sidebar {
+        background: white;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 1.5rem;
+        height: fit-content;
+    }
+    .sidebar-menu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .sidebar-menu li {
+        margin-bottom: 0.5rem;
+    }
+    .sidebar-menu a {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius-sm);
+        color: var(--text-dark);
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .sidebar-menu a:hover, .sidebar-menu a.active {
+        background: var(--primary);
+        color: white;
+    }
+    .sidebar-menu a i {
+        width: 20px;
+    }
+    
+    .main-content {
+        background: white;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+    }
+    
+    .tabs-header {
+        display: flex;
+        border-bottom: 2px solid var(--border-color);
+        background: var(--background);
+    }
+    .tab-btn {
+        padding: 1rem 1.5rem;
+        border: none;
+        background: none;
+        font-weight: 500;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -2px;
+    }
+    .tab-btn:hover { color: var(--primary); }
+    .tab-btn.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+        background: white;
+    }
+    
+    .tab-content {
+        padding: 2rem;
+        display: none;
+    }
+    .tab-content.active { display: block; }
+    
+    /* Timeline */
+    .timeline {
+        position: relative;
+        padding: 1rem 0;
+    }
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 20px;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: var(--border-color);
+    }
+    .timeline-item {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+    .timeline-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        z-index: 1;
+    }
+    .timeline-icon.completed {
+        background: var(--success);
+        color: white;
+    }
+    .timeline-icon.current {
+        background: var(--warning);
+        color: white;
+    }
+    .timeline-icon.pending {
+        background: var(--border-color);
+        color: var(--text-muted);
+    }
+    .timeline-content h4 {
+        color: var(--text-dark);
+        margin-bottom: 0.25rem;
+    }
+    .timeline-content p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin: 0;
+    }
+    .timeline-date {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+    
+    /* Documents Table */
+    .docs-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .docs-table th, .docs-table td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .docs-table th {
+        background: var(--background);
+        color: var(--text-muted);
+        font-weight: 600;
+    }
+    .doc-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    .doc-status.uploaded { background: rgba(46, 125, 50, 0.1); color: var(--success); }
+    .doc-status.pending { background: rgba(249, 168, 37, 0.1); color: var(--warning); }
+    .doc-status.rejected { background: rgba(198, 40, 40, 0.1); color: var(--danger); }
+    
+    /* Notifications */
+    .notification-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .notification-item {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+    .notification-item:last-child { border-bottom: none; }
+    .notification-item.unread {
+        background: rgba(26, 35, 126, 0.03);
+    }
+    .notification-item.unread .notification-title {
+        font-weight: 600;
+    }
+    .notification-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--background);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary);
+    }
+    .notification-content { flex: 1; }
+    .notification-title { color: var(--text-dark); margin-bottom: 0.25rem; }
+    .notification-time { font-size: 0.8rem; color: var(--text-muted); }
+    
+    /* Accordion */
+    .accordion-item {
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        margin-bottom: 0.75rem;
+        overflow: hidden;
+    }
+    .accordion-header {
+        padding: 1rem;
+        background: var(--background);
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 500;
+    }
+    .accordion-header:hover { background: #e8eaf6; }
+    .accordion-body {
+        padding: 1rem;
+        display: none;
+        color: var(--text-muted);
+    }
+    .accordion-item.active .accordion-body { display: block; }
+    
+    .info-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 2rem;
+    }
+    .info-table th, .info-table td {
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+    }
+    .info-table th {
+        background: var(--background);
+        width: 40%;
+    }
+    
+    .btn-download {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        background: var(--primary);
+        color: white;
+        border-radius: var(--radius-sm);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .btn-download:hover { background: var(--primary-dark); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+    <div class="dashboard-container">
+        <!-- Header Card -->
+        <div class="header-card">
+            <div class="header-content">
+                <div class="profile-photo">
+                    {% if application and application.doc_photo %}
+                    <img src="{{ url_for('static', filename='uploads/applications/' + application.appid + '/' + application.doc_photo) }}" alt="Photo">
+                    {% else %}
+                    <i class="fas fa-user"></i>
+                    {% endif %}
+                </div>
+                <div class="student-info">
+                    <h2>{{ student.name }}</h2>
+                    <p class="app-no">Application No: <strong>{{ application.appid if application else 'N/A' }}</strong></p>
+                    <p>Course Applied: <strong>{{ student.course_pref_1 or student.course or 'Not Selected' }}</strong></p>
+                    <p>Applied on: {{ application.submitted_at.strftime('%d %B %Y') if application and application.submitted_at else 'N/A' }}</p>
+                </div>
+                <div class="status-badge-large {% if application %}{% if application.status == 'submitted' %}status-submitted{% elif application.status == 'under_review' %}status-under-review{% elif application.status == 'verified' %}status-verified{% elif application.status == 'merit' %}status-merit{% elif application.status == 'admitted' %}status-admitted{% elif application.status == 'rejected' %}status-rejected{% endif %}{% endif %}">
+                    {{ application.status|title if application else 'Not Applied' }}
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-layout">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <ul class="sidebar-menu">
+                    <li><a href="{{ url_for('dashboard') }}" class="active" data-tab="application"><i class="fas fa-clipboard-check"></i> My Application</a></li>
+                    <li><a href="{{ url_for('upload') }}" data-tab="documents"><i class="fas fa-cloud-upload-alt"></i> Upload Documents</a></li>
+                    <li><a href="{{ url_for('pay_fee') }}" data-tab="payment"><i class="fas fa-credit-card"></i> Fee Payment</a></li>
+                    <li><a href="#" data-tab="status"><i class="fas fa-list-alt"></i> Application Status</a></li>
+                    <li><a href="#" data-tab="admit"><i class="fas fa-print"></i> Download Admit Card</a></li>
+                    <li><a href="#" data-tab="notifications"><i class="fas fa-bell"></i> Notifications</a></li>
+                    <li><a href="#" data-tab="help"><i class="fas fa-question-circle"></i> Help</a></li>
+                </ul>
+            </aside>
+            
+            <!-- Main Content -->
+            <main class="main-content">
+                <div class="tabs-header">
+                    <button class="tab-btn active" onclick="switchTab('application')">Application Status</button>
+                    <button class="tab-btn" onclick="switchTab('documents')">My Documents</button>
+                    <button class="tab-btn" onclick="switchTab('notifications')">Notifications</button>
+                    <button class="tab-btn" onclick="switchTab('info')">Important Information</button>
+                </div>
+                
+                <!-- Tab 1: Application Status -->
+                <div class="tab-content active" id="tab-application">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="section-title mb-0">Application Progress</h3>
+                        <a href="{{ url_for('download_application_pdf') }}" class="btn-download">
+                            <i class="fas fa-download"></i> Download Application PDF
+                        </a>
+                    </div>
+                    
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-icon {% if application and application.status != 'draft' %}completed{% else %}pending{% endif %}">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h4>Form Submitted</h4>
+                                <p>Your application form has been submitted successfully</p>
+                                <span class="timeline-date">{{ application.submitted_at.strftime('%d %B %Y') if application and application.submitted_at else 'Pending' }}</span>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-icon {% if uploaded_count >= 7 %}completed{% elif uploaded_count > 0 %}current{% else %}pending{% endif %}">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h4>Documents Uploaded</h4>
+                                <p>Required documents uploaded: {{ uploaded_count }} of 10</p>
+                                <span class="timeline-date">{% if uploaded_count >= 7 %}Completed{% else %}In Progress{% endif %}</span>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-icon {% if application and application.status in ['under_review', 'verified', 'merit', 'admitted'] %}completed{% elif uploaded_count >= 7 %}current{% else %}pending{% endif %}">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h4>Under Verification</h4>
+                                <p>Your documents are being verified by the administration</p>
+                                <span class="timeline-date">{% if application and application.status in ['under_review', 'verified', 'merit', 'admitted'] %}In Review{% else %}Pending{% endif %}</span>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-icon {% if application and application.status == 'merit' %}completed{% elif application and application.status in ['verified', 'admitted'] %}current{% else %}pending{% endif %}">
+                                <i class="fas fa-list-ol"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h4>Merit List</h4>
+                                <p>Merit list will be published on 15th August 2025</p>
+                                <span class="timeline-date">Upcoming</span>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-icon {% if student.payment_status == 'paid' %}completed{% else %}pending{% endif %}">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h4>Fee Payment</h4>
+                                <p>Pay admission fee after merit list declaration</p>
+                                <span class="timeline-date">{% if student.payment_status == 'paid' %}Paid{% else %}Pending{% endif %}</span>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-icon {% if application and application.status == 'admitted' %}completed{% else %}pending{% endif %}">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h4>Admission Confirmed</h4>
+                                <p>Final admission confirmation</p>
+                                <span class="timeline-date">{% if application and application.status == 'admitted' %}Confirmed{% else %}Pending{% endif %}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if application_notes %}
+                    <div class="alert alert-info mt-4">
+                        <i class="fas fa-info-circle"></i> <strong>Admin Notes:</strong> {{ application_notes }}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Tab 2: My Documents -->
+                <div class="tab-content" id="tab-documents">
+                    <h3 class="section-title">My Documents</h3>
+                    <table class="docs-table">
+                        <thead>
+                            <tr>
+                                <th>Document</th>
+                                <th>Status</th>
+                                <th>Uploaded On</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for doc in document_status %}
+                            <tr>
+                                <td>{{ doc.name }}</td>
+                                <td>
+                                    <span class="doc-status {{ doc.status }}">
+                                        <i class="fas fa-{{ 'check-circle' if doc.status == 'uploaded' else 'clock' if doc.status == 'pending' else 'times-circle' }}"></i>
+                                        {{ doc.status|title }}
+                                    </span>
+                                </td>
+                                <td>{{ doc.uploaded_date or '-' }}</td>
+                                <td>
+                                    {% if doc.status != 'uploaded' %}
+                                    <a href="{{ url_for('upload') }}" class="btn btn-sm btn-primary">Upload</a>
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Tab 3: Notifications -->
+                <div class="tab-content" id="tab-notifications">
+                    <h3 class="section-title">Notifications</h3>
+                    {% if notifications %}
+                    <ul class="notification-list">
+                        {% for notif in notifications %}
+                        <li class="notification-item {% if not notif.read %}unread{% endif %}">
+                            <div class="notification-icon">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div class="notification-content">
+                                <div class="notification-title">{{ notif.title }}</div>
+                                <p>{{ notif.message }}</p>
+                                <span class="notification-time">{{ notif.created_at.strftime('%d %B %Y, %H:%M') }}</span>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p class="text-muted text-center py-4">No notifications yet</p>
+                    {% endif %}
+                </div>
+                
+                <!-- Tab 4: Important Information -->
+                <div class="tab-content" id="tab-info">
+                    <h3 class="section-title">Important Information</h3>
+                    
+                    <h4 class="mb-3">Admission Schedule</h4>
+                    <table class="info-table">
+                        <tr><th>Start of Registration</th><td>01 June 2025</td></tr>
+                        <tr><th>Last Date to Apply</th><td>31 July 2025</td></tr>
+                        <tr><th>Document Verification</th><td>01-10 August 2025</td></tr>
+                        <tr><th>Merit List</th><td>15 August 2025</td></tr>
+                        <tr><th>Admission Confirmation</th><td>20-25 August 2025</td></tr>
+                    </table>
+                    
+                    <h4 class="mb-3">Helpdesk Contact</h4>
+                    <div class="card-elevated mb-4">
+                        <p><i class="fas fa-phone text-primary me-2"></i> 020-24368621</p>
+                        <p><i class="fas fa-envelope text-primary me-2"></i> sarhadcollege@gmail.com</p>
+                        <p><i class="fas fa-clock text-primary me-2"></i> Mon - Fri: 9AM - 5PM</p>
+                    </div>
+                    
+                    <h4 class="mb-3">Frequently Asked Questions</h4>
+                    <div class="accordion">
+                        <div class="accordion-item">
+                            <div class="accordion-header" onclick="toggleAccordion(this)">
+                                When will merit list be published?
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="accordion-body">The merit list is scheduled to be published on 15th August 2025. It will be available on this portal and the college notice board.</div>
+                        </div>
+                        <div class="accordion-item">
+                            <div class="accordion-header" onclick="toggleAccordion(this)">
+                                How do I pay the admission fee?
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="accordion-body">After the merit list is published, you can pay the admission fee through the Fee Payment tab on your dashboard using UPI, Net Banking, or DD.</div>
+                        </div>
+                        <div class="accordion-item">
+                            <div class="accordion-header" onclick="toggleAccordion(this)">
+                                What documents are required?
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="accordion-body">Required documents include: Passport photo, Signature, SSC marksheet, HSC marksheet, Leaving certificate, Aadhaar card, Category certificate (if applicable), Income certificate, Domicile certificate.</div>
+                        </div>
+                        <div class="accordion-item">
+                            <div class="accordion-header" onclick="toggleAccordion(this)">
+                                How to check application status?
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="accordion-body">Log in to your dashboard and check the Application Status tab. You can also enable notifications to receive updates via email/SMS.</div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        
+        document.querySelector(`.tab-btn[onclick="switchTab('${tabName}')"]`).classList.add('active');
+        document.getElementById('tab-' + tabName).classList.add('active');
+    }
+    
+    function toggleAccordion(header) {
+        const item = header.parentElement;
+        item.classList.toggle('active');
+    }
+</script>
+{% endblock %}

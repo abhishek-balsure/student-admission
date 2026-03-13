@@ -1,112 +1,823 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - Student Admission Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Poppins', sans-serif; background: #E9F1FA; }
-        .navbar { background: white; padding: 12px 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
-        .navbar .left { display: flex; align-items: center; gap: 30px; }
-        .navbar .logo { color: #00ABE4; font-size: 22px; font-weight: 700; }
-        .navbar .links { display: flex; gap: 20px; }
-        .navbar .links a { color: #333; text-decoration: none; font-weight: 500; padding: 8px 15px; border-radius: 8px; transition: 0.3s; }
-        .navbar .links a:hover, .navbar .links a.active { background: #E9F1FA; color: #00ABE4; }
-        .navbar .right { display: flex; align-items: center; gap: 15px; }
-        .btn-login { background: #00ABE4; color: white; padding: 8px 20px; border-radius: 20px; text-decoration: none; font-weight: 500; }
-        .hero { min-height: calc(100vh - 80px); display: flex; align-items: center; justify-content: center; text-align: center; padding: 2rem; position: relative; overflow: hidden; }
-        .hero::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #00ABE4 0%, #009B4D 50%, #E9F1FA 100%); background-size: 400% 400%; animation: gradientBG 15s ease infinite; z-index: -1; }
-        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        .hero-content { max-width: 800px; animation: fadeInUp 1s ease; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        .hero h1 { font-size: 3.5rem; color: white; margin-bottom: 1.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
-        .hero p { font-size: 1.25rem; color: rgba(255,255,255,0.9); margin-bottom: 2.5rem; line-height: 1.8; }
-        .hero-buttons { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; }
-        .btn { padding: 1rem 2.5rem; border-radius: 50px; font-size: 1.1rem; font-weight: 600; text-decoration: none; transition: all 0.3s ease; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 0.5rem; }
-        .btn-primary { background: white; color: #00ABE4; }
-        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .btn-secondary { background: transparent; color: white; border: 2px solid white; }
-        .btn-secondary:hover { background: white; color: #00ABE4; transform: translateY(-3px); }
-        .features { padding: 5rem 2rem; background: #E9F1FA; }
-        .features-container { max-width: 1200px; margin: 0 auto; }
-        .features h2 { text-align: center; font-size: 2.5rem; margin-bottom: 3rem; color: #333; }
-        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
-        .feature-card { background: white; padding: 2.5rem; border-radius: 20px; text-align: center; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .feature-card:hover { transform: translateY(-10px); box-shadow: 0 15px 40px rgba(0,0,0,0.1); }
-        .feature-icon { width: 80px; height: 80px; background: linear-gradient(135deg, #00ABE4 0%, #009B4D 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2rem; color: white; }
-        .feature-card h3 { font-size: 1.5rem; margin-bottom: 1rem; color: #333; }
-        .feature-card p { color: #666; line-height: 1.6; }
-        @media (max-width: 768px) { .hero h1 { font-size: 2.5rem; } .hero p { font-size: 1rem; } .hero-buttons { flex-direction: column; } .btn { width: 100%; justify-content: center; } }
-    </style>
-</head>
-<body>
-    <nav class="navbar">
-        <div class="left">
-            <div class="logo"><i class="fas fa-graduation-cap"></i> EduPortal</div>
-            <div class="links">
-                <a href="/" class="active">Home</a>
-                <a href="/courses">Courses</a>
-                <a href="/merit-list">Merit List</a>
-                <a href="/contact">Contact</a>
-            </div>
-        </div>
-        <div class="right">
-            <a href="/login" class="btn-login">Login</a>
-        </div>
-    </nav>
+{% extends "base.html" %}
 
-    <section class="hero">
-        <div class="hero-content">
-            <h1>Welcome to Student Admission Portal</h1>
-            <p>Simplify your admission process with our modern, efficient, and user-friendly platform. Apply online, track your application status, and get admitted to your dream institution.</p>
-            <div class="hero-buttons">
-                <a href="{{ url_for('register') }}" class="btn btn-primary">
-                    <i class="fas fa-user-plus"></i> Get Started
-                </a>
-                <a href="{{ url_for('login') }}" class="btn btn-secondary">
-                    <i class="fas fa-sign-in-alt"></i> Login
-                </a>
-            </div>
-        </div>
-    </section>
+{% block title %}Home{% endblock %}
 
-    <section class="features">
-        <div class="features-container">
-            <h2>Why Choose Our Portal?</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <h3>Quick Application</h3>
-                    <p>Submit your admission application in minutes with our streamlined process.</p>
+{% block extra_css %}
+<style>
+    .hero-section {
+        position: relative;
+        min-height: 85vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        background: linear-gradient(135deg, rgba(26, 35, 126, 0.95) 0%, rgba(57, 73, 171, 0.9) 100%), url('https://images.unsplash.com/photo-1562774053-701939374585?w=1920') center/cover;
+        padding: 6rem 2rem;
+    }
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(180deg, transparent 0%, rgba(26, 35, 126, 0.3) 100%);
+    }
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        max-width: 900px;
+    }
+    .hero-badge {
+        display: inline-block;
+        background: var(--secondary);
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+    .hero-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 3.5rem;
+        font-weight: 700;
+        color: white;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+    }
+    .hero-subtitle {
+        font-size: 1.25rem;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 2.5rem;
+        font-weight: 400;
+    }
+    .hero-buttons {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .btn-apply {
+        background: var(--secondary);
+        color: white;
+        padding: 1rem 2.5rem;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .btn-apply:hover {
+        background: #c44300;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(230, 81, 0, 0.4);
+    }
+    .btn-track {
+        background: transparent;
+        color: white;
+        border: 2px solid white;
+        padding: 1rem 2.5rem;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    .btn-track:hover {
+        background: white;
+        color: var(--primary);
+    }
+    .badge-row {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-top: 3rem;
+    }
+    .badge-item {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        padding: 0.75rem 1.5rem;
+        border-radius: 50px;
+        color: white;
+        font-weight: 500;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .badge-item i {
+        color: var(--secondary);
+    }
+
+    .section {
+        padding: 4rem 0;
+    }
+    .section-bg {
+        background: var(--background);
+    }
+    .section-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+    }
+    .section-subtitle {
+        color: var(--text-muted);
+        margin-bottom: 3rem;
+    }
+
+    .dates-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+    .date-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        transition: all 0.3s ease;
+    }
+    .date-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+    .date-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+    .date-content h4 {
+        font-size: 1rem;
+        color: var(--text-dark);
+        margin-bottom: 0.25rem;
+    }
+    .date-content p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin: 0;
+    }
+    .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+    }
+    .status-open {
+        background: rgba(46, 125, 50, 0.15);
+        color: var(--success);
+    }
+    .status-upcoming {
+        background: rgba(249, 168, 37, 0.15);
+        color: var(--warning);
+    }
+    .status-closed {
+        background: rgba(198, 40, 40, 0.15);
+        color: var(--danger);
+    }
+
+    .stats-section {
+        background: linear-gradient(135deg, var(--primary) 0%, #3949ab 100%);
+        padding: 4rem 0;
+    }
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 1.5rem;
+    }
+    .stat-card {
+        text-align: center;
+        color: white;
+    }
+    .stat-number {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+    }
+    .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+
+    .courses-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+    .course-card {
+        background: white;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        transition: all 0.3s ease;
+    }
+    .course-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-lg);
+    }
+    .course-header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        padding: 1.5rem;
+        color: white;
+        text-align: center;
+    }
+    .course-header h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        margin-bottom: 0.25rem;
+    }
+    .course-header p {
+        opacity: 0.9;
+        font-size: 0.9rem;
+    }
+    .course-body {
+        padding: 1.5rem;
+    }
+    .course-info-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .course-info-item:last-child {
+        border-bottom: none;
+    }
+    .course-info-item span:first-child {
+        color: var(--text-muted);
+    }
+    .course-info-item span:last-child {
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+    .course-btn {
+        display: block;
+        width: 100%;
+        padding: 0.875rem;
+        background: var(--primary);
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        margin-top: 1rem;
+        transition: all 0.3s ease;
+    }
+    .course-btn:hover {
+        background: var(--secondary);
+    }
+
+    .steps-section {
+        background: var(--background);
+        padding: 4rem 0;
+    }
+    .steps-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    .step-item {
+        flex: 1;
+        min-width: 180px;
+        text-align: center;
+        position: relative;
+    }
+    .step-item::after {
+        content: '\f054';
+        font-family: 'Font Awesome 6 Free';
+        font-weight: 900;
+        position: absolute;
+        right: -10px;
+        top: 30px;
+        color: var(--primary);
+        font-size: 1.25rem;
+    }
+    .step-item:last-child::after {
+        display: none;
+    }
+    .step-number {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0 auto 1rem;
+    }
+    .step-item h4 {
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+    }
+    .step-item p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .announcement-section {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        padding: 2rem 0;
+        overflow: hidden;
+    }
+    .announcement-title {
+        color: var(--secondary);
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    .ticker-wrapper {
+        overflow: hidden;
+    }
+    .ticker-content {
+        display: inline-block;
+        white-space: nowrap;
+        animation: ticker 30s linear infinite;
+    }
+    @keyframes ticker {
+        0% { transform: translateX(100%); }
+        100% { transform: translateX(-100%); }
+    }
+    .ticker-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: white;
+        padding: 0.5rem 2rem;
+        font-size: 1rem;
+    }
+    .ticker-item i {
+        color: var(--secondary);
+    }
+
+    .contact-section {
+        padding: 4rem 0;
+    }
+    .contact-grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 2rem;
+    }
+    .contact-card {
+        background: white;
+        padding: 2rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+    }
+    .contact-card h3 {
+        font-family: 'Playfair Display', serif;
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+    }
+    .contact-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .contact-item:last-child {
+        margin-bottom: 0;
+    }
+    .contact-icon {
+        width: 45px;
+        height: 45px;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+    .contact-item h4 {
+        font-size: 1rem;
+        color: var(--text-dark);
+        margin-bottom: 0.25rem;
+    }
+    .contact-item p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin: 0;
+    }
+    .map-container {
+        background: white;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+    }
+    .map-container iframe {
+        width: 100%;
+        height: 100%;
+        min-height: 350px;
+        border: none;
+    }
+
+    @media (max-width: 992px) {
+        .stats-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        .contact-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.25rem;
+        }
+        .hero-subtitle {
+            font-size: 1rem;
+        }
+        .badge-row {
+            flex-direction: column;
+            align-items: center;
+        }
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .steps-container {
+            flex-direction: column;
+        }
+        .step-item::after {
+            display: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- SECTION 1: HERO BANNER -->
+<section class="hero-section">
+    <div class="hero-content">
+        <span class="hero-badge"><i class="fas fa-bell"></i> Admissions Open for 2025-26</span>
+        <h1 class="hero-title">Welcome to Sarhad College Online Admission Portal</h1>
+        <p class="hero-subtitle">Affiliated to Savitribai Phule Pune University | Katraj, Pune</p>
+        <div class="hero-buttons">
+            {% if session.get('user_type') == 'student' %}
+            <a href="{{ url_for('apply') }}" class="btn-apply">
+                <i class="fas fa-user-plus"></i> Apply Now
+            </a>
+            {% else %}
+            <a href="{{ url_for('register') }}" class="btn-apply">
+                <i class="fas fa-user-plus"></i> Apply Now
+            </a>
+            {% endif %}
+            <a href="{{ url_for('track_application') }}" class="btn-track">
+                <i class="fas fa-search"></i> Track Application
+            </a>
+        </div>
+        <div class="badge-row">
+            <span class="badge-item"><i class="fas fa-star"></i> NAAC B+</span>
+            <span class="badge-item"><i class="fas fa-university"></i> SPPU Affiliated</span>
+            <span class="badge-item"><i class="fas fa-certificate"></i> UGC Recognized</span>
+            <span class="badge-item"><i class="fas fa-calendar"></i> Est. 2008</span>
+        </div>
+    </div>
+</section>
+
+<!-- SECTION 2: IMPORTANT DATES -->
+<section class="section section-bg">
+    <div class="container">
+        <h2 class="section-title text-center">Important Dates</h2>
+        <p class="section-subtitle text-center">Key dates for admission process 2025-26</p>
+        <div class="dates-grid">
+            <div class="date-card">
+                <div class="date-icon"><i class="fas fa-calendar-plus"></i></div>
+                <div class="date-content">
+                    <h4>Start of Online Registration</h4>
+                    <p>01 June 2025</p>
+                    <span class="status-badge status-closed">Closed</span>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-file-upload"></i>
-                    </div>
-                    <h3>Document Upload</h3>
-                    <p>Securely upload all required documents directly through the portal.</p>
+            </div>
+            <div class="date-card">
+                <div class="date-icon"><i class="fas fa-calendar-check"></i></div>
+                <div class="date-content">
+                    <h4>Last Date to Apply</h4>
+                    <p>31 July 2025</p>
+                    <span class="status-badge status-open">Open</span>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-bell"></i>
-                    </div>
-                    <h3>Real-time Updates</h3>
-                    <p>Get instant notifications about your application status via email.</p>
+            </div>
+            <div class="date-card">
+                <div class="date-icon"><i class="fas fa-file-alt"></i></div>
+                <div class="date-content">
+                    <h4>Document Verification</h4>
+                    <p>01–10 August 2025</p>
+                    <span class="status-badge status-upcoming">Upcoming</span>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h3>Secure & Private</h3>
-                    <p>Your data is protected with industry-standard security measures.</p>
+            </div>
+            <div class="date-card">
+                <div class="date-icon"><i class="fas fa-list-ol"></i></div>
+                <div class="date-content">
+                    <h4>Merit List Declaration</h4>
+                    <p>15 August 2025</p>
+                    <span class="status-badge status-upcoming">Upcoming</span>
+                </div>
+            </div>
+            <div class="date-card">
+                <div class="date-icon"><i class="fas fa-user-check"></i></div>
+                <div class="date-content">
+                    <h4>Admission Confirmation</h4>
+                    <p>20–25 August 2025</p>
+                    <span class="status-badge status-upcoming">Upcoming</span>
                 </div>
             </div>
         </div>
-    </section>
-</body>
-</html>
+    </div>
+</section>
+
+<!-- SECTION 3: QUICK STATS -->
+<section class="stats-section">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">2512+</div>
+                <div class="stat-label">Students</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">39</div>
+                <div class="stat-label">Teaching Staff</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">37</div>
+                <div class="stat-label">ICT Classrooms</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">800+</div>
+                <div class="stat-label">Placements</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">135</div>
+                <div class="stat-label">Computers</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">13,476</div>
+                <div class="stat-label">Books</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SECTION 4: AVAILABLE COURSES -->
+<section class="section">
+    <div class="container">
+        <h2 class="section-title text-center">Available Courses</h2>
+        <p class="section-subtitle text-center">Choose your career path - Admissions for 2025-26</p>
+        <div class="courses-grid">
+            <div class="course-card">
+                <div class="course-header">
+                    <h3>BCA</h3>
+                    <p>Bachelor of Computer Applications</p>
+                </div>
+                <div class="course-body">
+                    <div class="course-info-item">
+                        <span>Duration</span>
+                        <span>3 Years</span>
+                    </div>
+                    <div class="course-info-item">
+                        <span>Seats</span>
+                        <span>60</span>
+                    </div>
+                    <div class="course-info-item">
+                        <span>Eligibility</span>
+                        <span>10+2 (Any Stream)</span>
+                    </div>
+                    <a href="{{ url_for('register') }}" class="course-btn"><i class="fas fa-user-plus"></i> Apply Now</a>
+                </div>
+            </div>
+            <div class="course-card">
+                <div class="course-header">
+                    <h3>BSc CS</h3>
+                    <p>B.Sc. Computer Science</p>
+                </div>
+                <div class="course-body">
+                    <div class="course-info-item">
+                        <span>Duration</span>
+                        <span>3 Years</span>
+                    </div>
+                    <div class="course-info-item">
+                        <span>Seats</span>
+                        <span>60</span>
+                    </div>
+                    <div class="course-info-item">
+                        <span>Eligibility</span>
+                        <span>10+2 (Science)</span>
+                    </div>
+                    <a href="{{ url_for('register') }}" class="course-btn"><i class="fas fa-user-plus"></i> Apply Now</a>
+                </div>
+            </div>
+            <div class="course-card">
+                <div class="course-header">
+                    <h3>BA</h3>
+                    <p>Bachelor of Arts</p>
+                </div>
+                <div class="course-body">
+                    <div class="course-info-item">
+                        <span>Duration</span>
+                        <span>3 Years</span>
+                    </div>
+                    <div class="course-info-item">
+                        <span>Seats</span>
+                        <span>120</span>
+                    </div>
+                    <div class="course-info-item">
+                        <span>Eligibility</span>
+                        <span>10+2 (Any Stream)</span>
+                    </div>
+                    <a href="{{ url_for('register') }}" class="course-btn"><i class="fas fa-user-plus"></i> Apply Now</a>
+                </div>
+            </div>
+            <div class="course-card">
+                <div class="course-header">
+                    <h3>BCom</h3>
+                    <p>Bachelor of Commerce</p>
+                </div>
+                <div class="course-body">
+                    <div class="course-info-item">
+                        <span>Duration</span>
+                        <span>3 Years</span>
+                    </div>
+                    <div class="course-info-item">
+                        <span>Seats</span>
+                        <span>120</span>
+                    </div>
+                    <div class="course-info-item">
+                        <span>Eligibility</span>
+                        <span>10+2 (Commerce/Science)</span>
+                    </div>
+                    <a href="{{ url_for('register') }}" class="course-btn"><i class="fas fa-user-plus"></i> Apply Now</a>
+                </div>
+            </div>
+            <div class="course-card">
+                <div class="course-header">
+                    <h3>BCom (BM)</h3>
+                    <p>B.Com. Business Management</p>
+                </div>
+                <div class="course-body">
+                    <div class="course-info-item">
+                        <span>Duration</span>
+                        <span>3 Years</span>
+                    </div>
+                    <div class="course-info-item">
+                        <span>Seats</span>
+                        <span>60</span>
+                    </div>
+                    <div class="course-info-item">
+                        <span>Eligibility</span>
+                        <span>10+2 (Commerce)</span>
+                    </div>
+                    <a href="{{ url_for('register') }}" class="course-btn"><i class="fas fa-user-plus"></i> Apply Now</a>
+                </div>
+            </div>
+            <div class="course-card">
+                <div class="course-header">
+                    <h3>BCom (CA)</h3>
+                    <p>B.Com. Computer Application</p>
+                </div>
+                <div class="course-body">
+                    <div class="course-info-item">
+                        <span>Duration</span>
+                        <span>3 Years</span>
+                    </div>
+                    <div class="course-info-item">
+                        <span>Seats</span>
+                        <span>60</span>
+                    </div>
+                    <div class="course-info-item">
+                        <span>Eligibility</span>
+                        <span>10+2 (Any Stream)</span>
+                    </div>
+                    <a href="{{ url_for('register') }}" class="course-btn"><i class="fas fa-user-plus"></i> Apply Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SECTION 5: HOW TO APPLY -->
+<section class="steps-section">
+    <div class="container">
+        <h2 class="section-title text-center">How to Apply</h2>
+        <p class="section-subtitle text-center">Follow these simple steps to complete your admission</p>
+        <div class="steps-container">
+            <div class="step-item">
+                <div class="step-number">1</div>
+                <h4>Register Online</h4>
+                <p>Create your account</p>
+            </div>
+            <div class="step-item">
+                <div class="step-number">2</div>
+                <h4>Fill Form</h4>
+                <p>Enter details</p>
+            </div>
+            <div class="step-item">
+                <div class="step-number">3</div>
+                <h4>Upload Documents</h4>
+                <p>Submit required docs</p>
+            </div>
+            <div class="step-item">
+                <div class="step-number">4</div>
+                <h4>Pay Fee</h4>
+                <p>Online payment</p>
+            </div>
+            <div class="step-item">
+                <div class="step-number">5</div>
+                <h4>Track Status</h4>
+                <p>Check admission status</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SECTION 6: ANNOUNCEMENTS TICKER -->
+<section class="announcement-section">
+    <div class="container">
+        <h3 class="announcement-title"><i class="fas fa-bullhorn"></i> Latest Announcements</h3>
+        <div class="ticker-wrapper">
+            <div class="ticker-content">
+                <span class="ticker-item"><i class="fas fa-bell"></i> Merit list for BCA 2025 published</span>
+                <span class="ticker-item"><i class="fas fa-bell"></i> Document verification schedule released</span>
+                <span class="ticker-item"><i class="fas fa-bell"></i> Last date to apply extended to 31st July 2025</span>
+                <span class="ticker-item"><i class="fas fa-bell"></i> Helpdesk available on all working days 9AM-5PM</span>
+                <span class="ticker-item"><i class="fas fa-bell"></i> Merit list for BSc CS 2025 published</span>
+                <span class="ticker-item"><i class="fas fa-bell"></i> Document verification schedule released</span>
+                <span class="ticker-item"><i class="fas fa-bell"></i> Last date to apply extended to 31st July 2025</span>
+                <span class="ticker-item"><i class="fas fa-bell"></i> Helpdesk available on all working days 9AM-5PM</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SECTION 7: CONTACT & HELPDESK -->
+<section class="contact-section">
+    <div class="container">
+        <h2 class="section-title text-center">Contact & Helpdesk</h2>
+        <p class="section-subtitle text-center">Get in touch with us for any queries</p>
+        <div class="contact-grid">
+            <div class="contact-card">
+                <h3><i class="fas fa-headset"></i> Helpline</h3>
+                <div class="contact-item">
+                    <div class="contact-icon"><i class="fas fa-phone"></i></div>
+                    <div>
+                        <h4>Phone</h4>
+                        <p>020-24368621</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                    <div>
+                        <h4>Email</h4>
+                        <p>sarhadcollege@gmail.com</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+                    <div>
+                        <h4>Address</h4>
+                        <p>Sr.No.79,80,81,76/4, Near Rajaram Gas Agency, Pune-Kashmir Maitri Chowk, Katraj, Pune 411046</p>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-icon"><i class="fas fa-clock"></i></div>
+                    <div>
+                        <h4>Helpline Hours</h4>
+                        <p>Mon - Fri: 9AM - 5PM</p>
+                    </div>
+                </div>
+            </div>
+            <div class="map-container">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3783.225586752858!2d73.8567!3d18.4577!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2eac4a8b8a8a8%3A0x8a8a8a8a8a8a8a8a!2sKatraj%2C%20Pune%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1234567890" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

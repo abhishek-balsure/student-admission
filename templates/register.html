@@ -1,86 +1,380 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - EduPortal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #E9F1FA 0%, #009B4D 50%, #00ABE4 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .register-box { background: white; padding: 30px; border-radius: 20px; width: 100%; max-width: 450px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
-        .register-box h1 { text-align: center; color: #00ABE4; margin-bottom: 5px; font-size: 26px; }
-        .register-box p { text-align: center; color: #666; margin-bottom: 25px; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 6px; font-weight: 500; color: #333; font-size: 14px; }
-        .form-group input, .form-group select { width: 100%; padding: 12px; border: 2px solid #E9F1FA; border-radius: 10px; font-size: 14px; }
-        .form-group input:focus, .form-group select:focus { outline: none; border-color: #00ABE4; }
-        .btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #00ABE4 0%, #009B4D 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; }
-        .btn:hover { transform: translateY(-2px); }
-        .links { text-align: center; margin-top: 20px; }
-        .links a { color: #00ABE4; text-decoration: none; font-weight: 500; }
-    </style>
-</head>
-<body>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div style="padding:12px;border-radius:8px;margin-bottom:15px;background:#fee;color:#c00;border-left:4px solid #c00;">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-    
-    <div class="register-box">
-        <h1><i class="fas fa-user-plus"></i> Register</h1>
-        <p>Create your account</p>
-        
-        <form method="POST" action="/register">
-            <div class="form-group">
-                <label>Full Name</label>
-                <input type="text" name="name" placeholder="Your name" required>
+{% extends "base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block extra_css %}
+<style>
+    .register-page {
+        min-height: calc(100vh - 250px);
+        padding: 2rem 0;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--secondary) 100%);
+    }
+    .register-container {
+        max-width: 700px;
+        margin: 0 auto;
+    }
+    .register-card {
+        background: white;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+    }
+    .register-header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        padding: 2rem;
+        text-align: center;
+        color: white;
+    }
+    .register-header h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.75rem;
+        margin-bottom: 0.5rem;
+    }
+    .register-header p {
+        opacity: 0.9;
+        font-size: 0.9rem;
+    }
+    .register-body {
+        padding: 2rem;
+    }
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+    .form-group-full {
+        grid-column: span 2;
+    }
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: var(--text-dark);
+    }
+    .form-label .required {
+        color: var(--danger);
+    }
+    .radio-group {
+        display: flex;
+        gap: 1.5rem;
+    }
+    .radio-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+    }
+    .radio-label input {
+        accent-color: var(--primary);
+    }
+    .input-group {
+        position: relative;
+    }
+    .input-group .form-control {
+        padding-right: 3rem;
+    }
+    .input-group .password-toggle {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: var(--text-muted);
+    }
+    .input-group .password-toggle:hover {
+        color: var(--primary);
+    }
+    .otp-btn {
+        position: absolute;
+        right: 0.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 0.4rem 0.75rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.8rem;
+        cursor: pointer;
+    }
+    .captcha-box {
+        background: var(--background);
+        padding: 1rem;
+        border-radius: var(--radius-sm);
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+    .captcha-box label {
+        font-weight: 500;
+        color: var(--text-dark);
+    }
+    .captcha-question {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin: 0.5rem 0;
+    }
+    .captcha-input {
+        max-width: 100px;
+        text-align: center;
+    }
+    .terms-checkbox {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+    .terms-checkbox input {
+        margin-top: 0.25rem;
+        accent-color: var(--primary);
+    }
+    .terms-checkbox label {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+    .terms-checkbox a {
+        color: var(--primary);
+    }
+    .btn-register {
+        width: 100%;
+        padding: 1rem;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        color: white;
+        border: none;
+        border-radius: var(--radius-sm);
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    .btn-register:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+    .login-link {
+        text-align: center;
+        margin-top: 1.5rem;
+        color: var(--text-muted);
+    }
+    .login-link a {
+        color: var(--secondary);
+        font-weight: 600;
+    }
+    .success-box {
+        background: rgba(46, 125, 50, 0.1);
+        border: 2px solid var(--success);
+        border-radius: var(--radius-md);
+        padding: 2rem;
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+    .success-box i {
+        font-size: 3rem;
+        color: var(--success);
+        margin-bottom: 1rem;
+    }
+    .success-box h3 {
+        color: var(--success);
+        margin-bottom: 0.5rem;
+    }
+    .app-ref {
+        background: var(--primary);
+        color: white;
+        padding: 1rem;
+        border-radius: var(--radius-sm);
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 1rem 0;
+    }
+    .alert-error {
+        background: rgba(198, 40, 40, 0.1);
+        border-left: 4px solid var(--danger);
+        color: var(--danger);
+        padding: 1rem;
+        border-radius: var(--radius-sm);
+        margin-bottom: 1rem;
+    }
+    @media (max-width: 576px) {
+        .form-grid { grid-template-columns: 1fr; }
+        .form-group-full { grid-column: span 1; }
+        .radio-group { flex-direction: column; gap: 0.75rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="register-page">
+    <div class="register-container">
+        <div class="register-card">
+            <div class="register-header">
+                <h1><i class="fas fa-graduation-cap"></i> New Student Registration</h1>
+                <p>Sarhad College of Arts, Commerce & Science | Admission 2025-26</p>
             </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" name="email" placeholder="Email" required>
-                </div>
-                <div class="form-group">
-                    <label>Contact</label>
-                    <input type="text" name="contact" placeholder="Mobile" required>
+            <div class="register-body">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            {% if category == 'success' and 'SCAS' in message %}
+                            <div class="success-box">
+                                <i class="fas fa-check-circle"></i>
+                                <h3>Registration Successful!</h3>
+                                <p>Your Application Reference Number:</p>
+                                <div class="app-ref">{{ message.split('SCAS-2025-')[1].split(' ')[0] if 'SCAS-2025-' in message else message }}</div>
+                                <p class="mb-0">Please login to continue.</p>
+                            </div>
+                            {% else %}
+                            <div class="alert alert-{{ category }}">{{ message }}</div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                {% if not (session.get('registration_success')) %}
+                <form method="POST" action="{{ url_for('register') }}" id="registerForm">
+                    <div class="form-grid">
+                        <div class="form-group form-group-full">
+                            <label class="form-label">Full Name (as per 10th marksheet) <span class="required">*</span></label>
+                            <input type="text" name="name" class="form-control" placeholder="Enter your full name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Date of Birth <span class="required">*</span></label>
+                            <input type="date" name="dob" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Mobile Number <span class="required">*</span></label>
+                            <div class="input-group">
+                                <input type="tel" name="contact" class="form-control" placeholder="10-digit mobile number" pattern="[0-9]{10}" required>
+                                <button type="button" class="otp-btn">Send OTP</button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group form-group-full">
+                            <label class="form-label">Email Address <span class="required">*</span></label>
+                            <input type="email" name="email" class="form-control" placeholder="your@email.com" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Gender <span class="required">*</span></label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="gender" value="Male" required> Male
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="gender" value="Female"> Female
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="gender" value="Other"> Other
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Category <span class="required">*</span></label>
+                            <select name="category" class="form-control" required>
+                                <option value="">Select Category</option>
+                                <option value="General">General</option>
+                                <option value="OBC">OBC</option>
+                                <option value="SC">SC</option>
+                                <option value="ST">ST</option>
+                                <option value="NT">NT</option>
+                                <option value="SBC">SBC</option>
+                                <option value="EWS">EWS</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Course <span class="required">*</span></label>
+                            <select name="course" class="form-control" required>
+                                <option value="">Select Course</option>
+                                <option value="BCA">BCA (Bachelor of Computer Applications)</option>
+                                <option value="BSc CS">BSc CS (Bachelor of Computer Science)</option>
+                                <option value="BA">BA (Bachelor of Arts)</option>
+                                <option value="BCom">BCom (Bachelor of Commerce)</option>
+                                <option value="BCom (BM)">BCom (Business Management)</option>
+                                <option value="BCom (CA)">BCom (Computer Application)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Password <span class="required">*</span></label>
+                            <div class="input-group">
+                                <input type="password" name="password" id="password" class="form-control" placeholder="Create password" required minlength="6">
+                                <i class="fas fa-eye password-toggle" onclick="togglePassword('password')"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Confirm Password <span class="required">*</span></label>
+                            <div class="input-group">
+                                <input type="password" name="confirm_password" id="confirm_password" class="form-control" placeholder="Confirm password" required>
+                                <i class="fas fa-eye password-toggle" onclick="togglePassword('confirm_password')"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group form-group-full">
+                            <div class="captcha-box">
+                                <label>Security Check <span class="required">*</span></label>
+                                <div class="captcha-question">What is 3 + 4 = ?</div>
+                                <input type="number" name="captcha" class="form-control captcha-input" placeholder="?" required min="7" max="7" style="margin: 0 auto;">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group form-group-full">
+                            <div class="terms-checkbox">
+                                <input type="checkbox" id="terms" name="terms" required>
+                                <label for="terms">I agree to the <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a>. All information provided is true and accurate.</label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group form-group-full">
+                            <button type="submit" class="btn-register">
+                                <i class="fas fa-user-plus"></i> Register Now
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                {% endif %}
+                
+                <div class="login-link">
+                    Already registered? <a href="{{ url_for('login') }}">Login here</a>
                 </div>
             </div>
-            <div class="form-group">
-                <label>Course</label>
-                <select name="course" required>
-                    <option value="">Select Course</option>
-                    <option value="Computer Science">Computer Science</option>
-                    <option value="Information Technology">Information Technology</option>
-                    <option value="Electronics Engineering">Electronics Engineering</option>
-                    <option value="Mechanical Engineering">Mechanical Engineering</option>
-                    <option value="Civil Engineering">Civil Engineering</option>
-                    <option value="Business Administration">Business Administration</option>
-                    <option value="Data Science">Data Science</option>
-                    <option value="Artificial Intelligence">Artificial Intelligence</option>
-                </select>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" name="password" placeholder="Password" required>
-                </div>
-                <div class="form-group">
-                    <label>Confirm</label>
-                    <input type="password" name="confirm_password" placeholder="Confirm" required>
-                </div>
-            </div>
-            <button type="submit" class="btn">Register</button>
-        </form>
-        
-        <div class="links">
-            <p>Already have account? <a href="/login">Login</a></p>
         </div>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function togglePassword(fieldId) {
+        const field = document.getElementById(fieldId);
+        const icon = field.nextElementSibling;
+        if (field.type === 'password') {
+            field.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            field.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+    
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm_password').value;
+        if (password !== confirmPassword) {
+            e.preventDefault();
+            alert('Passwords do not match!');
+            return;
+        }
+        if (password.length < 6) {
+            e.preventDefault();
+            alert('Password must be at least 6 characters!');
+            return;
+        }
+    });
+</script>
+{% endblock %}

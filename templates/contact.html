@@ -1,116 +1,91 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us - EduPortal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Poppins', sans-serif; background: #E9F1FA; }
-        .navbar { background: white; padding: 12px 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
-        .navbar .left { display: flex; align-items: center; gap: 30px; }
-        .navbar .logo { color: #00ABE4; font-size: 22px; font-weight: 700; }
-        .navbar .links { display: flex; gap: 20px; }
-        .navbar .links a { color: #333; text-decoration: none; font-weight: 500; padding: 8px 15px; border-radius: 8px; transition: 0.3s; }
-        .navbar .links a:hover, .navbar .links a.active { background: #E9F1FA; color: #00ABE4; }
-        .navbar .right { display: flex; align-items: center; gap: 15px; }
-        .btn-login { background: #00ABE4; color: white; padding: 8px 20px; border-radius: 20px; text-decoration: none; font-weight: 500; }
-        .contact-page { padding: 3rem 2rem; min-height: calc(100vh - 80px); }
-        .contact-container { max-width: 900px; margin: 0 auto; }
-        .page-header { text-align: center; margin-bottom: 3rem; }
-        .page-header h1 { font-size: 2.5rem; color: #333; margin-bottom: 0.5rem; }
-        .contact-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 2rem; }
-        .contact-info-card { background: white; padding: 2rem; border-radius: 20px; }
-        .contact-info-card h3 { font-size: 1.25rem; color: #333; margin-bottom: 1.5rem; }
-        .info-item { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
-        .info-item .icon { width: 50px; height: 50px; background: linear-gradient(135deg, #00ABE4 0%, #009B4D 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; }
-        .info-item .text h4 { color: #333; margin-bottom: 0.25rem; }
-        .info-item .text p { color: #666; font-size: 0.9rem; margin: 0; }
-        .contact-form-card { background: white; padding: 2rem; border-radius: 20px; }
-        .contact-form-card h3 { font-size: 1.25rem; color: #333; margin-bottom: 1.5rem; }
-        .form-group { margin-bottom: 1.25rem; }
-        .form-group label { display: block; margin-bottom: 0.5rem; color: #333; font-weight: 500; }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 0.875rem; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 1rem; background: #fff; color: #333; transition: border-color 0.3s; }
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: #00ABE4; }
-        .btn-submit { width: 100%; padding: 1rem; background: linear-gradient(135deg, #00ABE4 0%, #009B4D 100%); color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; }
-        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3); }
-        @media (max-width: 768px) { .contact-grid { grid-template-columns: 1fr; } }
-    </style>
-</head>
-<body>
-    <nav class="navbar">
-        <div class="left">
-            <div class="logo"><i class="fas fa-graduation-cap"></i> EduPortal</div>
-            <div class="links">
-                <a href="/">Home</a>
-                <a href="/courses">Courses</a>
-                <a href="/merit-list">Merit List</a>
-                <a href="/contact" class="active">Contact</a>
-            </div>
-        </div>
-        <div class="right">
-            <a href="/login" class="btn-login">Login</a>
-        </div>
-    </nav>
+{% extends "base.html" %}
 
-    <div class="contact-page">
-        <div class="contact-container">
-            <div class="page-header">
-                <h1>Contact Us</h1>
-                <p>We're here to help</p>
-            </div>
-            <div class="contact-grid">
-                <div class="contact-info-card">
-                    <h3>Get in Touch</h3>
-                    <div class="info-item">
-                        <div class="icon"><i class="fas fa-map-marker-alt"></i></div>
-                        <div class="text"><h4>Address</h4><p>123 Education Lane, Knowledge City, India</p></div>
-                    </div>
-                    <div class="info-item">
-                        <div class="icon"><i class="fas fa-envelope"></i></div>
-                        <div class="text"><h4>Email</h4><p>admissions@eduportal.com</p></div>
-                    </div>
-                    <div class="info-item">
-                        <div class="icon"><i class="fas fa-phone"></i></div>
-                        <div class="text"><h4>Phone</h4><p>+91 1234567890</p></div>
-                    </div>
-                    <div class="info-item">
-                        <div class="icon"><i class="fas fa-clock"></i></div>
-                        <div class="text"><h4>Hours</h4><p>Mon - Fri: 9AM - 6PM</p></div>
-                    </div>
-                </div>
-                <div class="contact-form-card">
-                    <h3>Send us a Message</h3>
-                    <form method="POST" action="{{ url_for('contact') }}">
-                        <div class="form-group">
-                            <label>Your Name</label>
-                            <input type="text" name="name" placeholder="Enter your name" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Email Address</label>
-                            <input type="email" name="email" placeholder="Enter your email" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Subject</label>
-                            <select name="subject" required>
-                                <option value="">Select Subject</option>
-                                <option value="Admission Inquiry">Admission Inquiry</option>
-                                <option value="Course Information">Course Information</option>
-                                <option value="Technical Support">Technical Support</option>
-                                <option value="General">General</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Message</label>
-                            <textarea name="message" rows="4" placeholder="Your message..." required></textarea>
-                        </div>
-                        <button type="submit" class="btn-submit"><i class="fas fa-paper-plane"></i> Send Message</button>
-                    </form>
+{% block title %}Contact Us{% endblock %}
+
+{% block extra_css %}
+<style>
+    .contact-page { padding: 3rem 2rem; }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 2rem; }
+    .contact-info-card { background: white; padding: 2rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); }
+    .contact-info-card h3 { font-size: 1.25rem; color: var(--primary); margin-bottom: 1.5rem; font-family: 'Playfair Display', serif; }
+    .info-item { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+    .info-item .icon { width: 50px; height: 50px; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; }
+    .info-item .text h4 { color: var(--text-dark); margin-bottom: 0.25rem; }
+    .info-item .text p { color: var(--text-muted); font-size: 0.9rem; margin: 0; }
+    .contact-form-card { background: white; padding: 2rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); }
+    .contact-form-card h3 { font-size: 1.25rem; color: var(--primary); margin-bottom: 1.5rem; font-family: 'Playfair Display', serif; }
+    .btn-submit { width: 100%; padding: 1rem; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; border: none; border-radius: var(--radius-sm); font-size: 1rem; font-weight: 600; cursor: pointer; transition: var(--transition); }
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    @media (max-width: 768px) { .contact-grid { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="text-center mb-4">
+        <h1 class="section-title text-center">Contact Us</h1>
+        <p class="text-muted">We're here to help - Reach out to us</p>
+    </div>
+    <div class="contact-grid">
+        <div class="contact-info-card">
+            <h3>Get in Touch</h3>
+            <div class="info-item">
+                <div class="icon"><i class="fas fa-map-marker-alt"></i></div>
+                <div class="text">
+                    <h4>Address</h4>
+                    <p>Sr.No.79,80,81,76/4, Near Rajaram Gas Agency,<br>Pune-Kashmir Maitri Chowk, Katraj, Pune 411046</p>
                 </div>
             </div>
+            <div class="info-item">
+                <div class="icon"><i class="fas fa-envelope"></i></div>
+                <div class="text">
+                    <h4>Email</h4>
+                    <p>sarhadcollege@gmail.com</p>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="icon"><i class="fas fa-phone"></i></div>
+                <div class="text">
+                    <h4>Phone</h4>
+                    <p>020-24368621</p>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="icon"><i class="fas fa-clock"></i></div>
+                <div class="text">
+                    <h4>Hours</h4>
+                    <p>Mon - Fri: 9AM - 5PM | Sat: 9AM - 1PM</p>
+                </div>
+            </div>
+        </div>
+        <div class="contact-form-card">
+            <h3>Send us a Message</h3>
+            <form method="POST" action="{{ url_for('contact') }}">
+                <div class="form-group">
+                    <label class="form-label">Your Name</label>
+                    <input type="text" name="name" class="form-control" placeholder="Enter your name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" name="email" class="form-control" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Subject</label>
+                    <select name="subject" class="form-control" required>
+                        <option value="">Select Subject</option>
+                        <option value="Admission Inquiry">Admission Inquiry</option>
+                        <option value="Course Information">Course Information</option>
+                        <option value="Technical Support">Technical Support</option>
+                        <option value="General">General</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Message</label>
+                    <textarea name="message" class="form-control" rows="4" placeholder="Your message..." required></textarea>
+                </div>
+                <button type="submit" class="btn-submit"><i class="fas fa-paper-plane"></i> Send Message</button>
+            </form>
         </div>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

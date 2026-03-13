@@ -1,70 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard - EduPortal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Poppins', sans-serif; background: #E9F1FA; }
-        .navbar { background: white; padding: 12px 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
-        .navbar .left { display: flex; align-items: center; gap: 30px; }
-        .navbar .logo { color: #00ABE4; font-size: 22px; font-weight: 700; }
-        .navbar .links { display: flex; gap: 20px; }
-        .navbar .links a { color: #333; text-decoration: none; font-weight: 500; padding: 8px 15px; border-radius: 8px; transition: 0.3s; }
-        .navbar .links a:hover, .navbar .links a.active { background: #E9F1FA; color: #00ABE4; }
-        .navbar .right { display: flex; align-items: center; gap: 15px; }
-        .navbar .user { display: flex; align-items: center; gap: 8px; color: #333; }
-        .navbar .logout { background: #00ABE4; color: white !important; padding: 8px 20px; border-radius: 20px; }
-        .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
-        .welcome { background: linear-gradient(135deg, #00ABE4 0%, #009B4D 100%); color: white; padding: 25px; border-radius: 15px; margin-bottom: 25px; }
-        .welcome h1 { font-size: 24px; }
-        .welcome p { opacity: 0.9; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .card h3 { color: #00ABE4; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-        .card h3 i { width: 35px; height: 35px; background: #E9F1FA; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-        .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
-        .info-row:last-child { border: none; }
-        .info-label { color: #666; }
-        .info-value { font-weight: 600; }
-        .status { padding: 10px; border-radius: 8px; text-align: center; font-weight: 600; }
-        .status.paid { background: #d4edda; color: #155724; }
-        .status.pending { background: #fff3cd; color: #856404; }
-        .status.approved { background: #d4edda; color: #155724; }
-        .status.rejected { background: #f8d7da; color: #721c24; }
-        .btn { display: block; width: 100%; padding: 12px; background: linear-gradient(135deg, #00ABE4 0%, #009B4D 100%); color: white; border: none; border-radius: 10px; font-weight: 600; text-decoration: none; text-align: center; margin-top: 10px; }
-        .btn-sm { padding: 8px 15px; font-size: 14px; display: inline-block; }
-    </style>
-</head>
-<body>
-    <nav class="navbar">
-        <div class="left">
-            <div class="logo"><i class="fas fa-graduation-cap"></i> EduPortal</div>
-            <div class="links">
-                <a href="/"><i class="fas fa-home"></i> Home</a>
-                <a href="/courses"><i class="fas fa-book"></i> Courses</a>
-                <a href="/merit-list"><i class="fas fa-list"></i> Merit List</a>
-                <a href="/contact"><i class="fas fa-envelope"></i> Contact</a>
-                <a href="/student/dashboard" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-            </div>
-        </div>
-        <div class="right">
-            <div class="user"><i class="fas fa-user"></i> {{ student.name }}</div>
-            <a href="/logout" class="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
-        </div>
-    </nav>
-    
-    <div class="container">
-        <div class="welcome">
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Sarhad College{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-page { padding: 2rem; }
+    .welcome-banner { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; padding: 25px; border-radius: var(--radius-lg); margin-bottom: 2rem; }
+    .welcome-banner h1 { font-size: 1.5rem; font-family: 'Playfair Display', serif; }
+    .welcome-banner p { opacity: 0.9; }
+    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+    .dashboard-card { background: white; padding: 1.5rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); }
+    .dashboard-card h3 { color: var(--primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem; font-family: 'Playfair Display', serif; }
+    .dashboard-card h3 i { width: 35px; height: 35px; background: var(--background); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; color: var(--primary); }
+    .info-row { display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid var(--border-color); }
+    .info-row:last-child { border: none; }
+    .info-label { color: var(--text-muted); }
+    .info-value { font-weight: 600; }
+    .status { padding: 0.5rem 1rem; border-radius: var(--radius-sm); text-align: center; font-weight: 600; display: inline-block; }
+    .status.paid { background: rgba(46, 125, 50, 0.15); color: var(--success); }
+    .status.pending { background: rgba(249, 168, 37, 0.15); color: var(--warning); }
+    .status.approved { background: rgba(46, 125, 50, 0.15); color: var(--success); }
+    .status.rejected { background: rgba(198, 40, 40, 0.15); color: var(--danger); }
+    .btn-dashboard { display: block; width: 100%; padding: 0.75rem; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; border: none; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; text-align: center; margin-top: 0.75rem; transition: var(--transition); }
+    .btn-dashboard:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .btn-dashboard-sm { padding: 0.5rem 1rem; font-size: 0.85rem; display: inline-block; width: auto; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="dashboard-page">
+        <div class="welcome-banner">
             <h1>Welcome, {{ student.name }}!</h1>
             <p>{{ student.course }} | ID: {{ student.student_id }}</p>
         </div>
         
-        <div class="grid">
-            <div class="card">
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
                 <h3><i class="fas fa-user"></i> Personal Info</h3>
                 <div class="info-row"><span class="info-label">Name</span><span class="info-value">{{ student.name }}</span></div>
                 <div class="info-row"><span class="info-label">Email</span><span class="info-value">{{ student.email }}</span></div>
@@ -72,40 +44,42 @@
                 <div class="info-row"><span class="info-label">Course</span><span class="info-value">{{ student.course }}</span></div>
             </div>
             
-            <div class="card">
+            <div class="dashboard-card">
                 <h3><i class="fas fa-credit-card"></i> Payment</h3>
-                <div class="status {{ student.payment_status }}">{{ student.payment_status|upper }}</div>
+                <div class="text-center mb-2">
+                    <span class="status {{ student.payment_status }}">{{ student.payment_status|upper }}</span>
+                </div>
                 {% if student.payment_status == 'paid' %}
                 <div class="info-row"><span class="info-label">Payment ID</span><span class="info-value" style="font-size:12px;">{{ student.payment_id }}</span></div>
                 <div class="info-row"><span class="info-label">Amount</span><span class="info-value">Rs. {{ student.payment_amount }}</span></div>
                 {% else %}
-                <a href="/payment" class="btn"><i class="fas fa-credit-card"></i> Pay Now</a>
+                <a href="/payment" class="btn-dashboard"><i class="fas fa-credit-card"></i> Pay Now</a>
                 {% endif %}
             </div>
             
-            <div class="card">
+            <div class="dashboard-card">
                 <h3><i class="fas fa-file-alt"></i> Application</h3>
                 {% if application %}
                 <div class="info-row"><span class="info-label">App ID</span><span class="info-value">{{ application.appid }}</span></div>
                 <div class="info-row"><span class="info-label">Status</span><span class="info-value"><span class="status {{ application.status }}">{{ application.status|upper }}</span></span></div>
                 <div class="info-row"><span class="info-label">Submitted</span><span class="info-value">{{ application.submitted_at.strftime('%Y-%m-%d') }}</span></div>
                 {% else %}
-                <p style="color:#666;">No application submitted</p>
+                <p style="color:var(--text-muted);">No application submitted</p>
                 {% if student.payment_status == 'paid' %}
-                <a href="/student/application" class="btn"><i class="fas fa-plus"></i> Submit Application</a>
+                <a href="/student/application" class="btn-dashboard"><i class="fas fa-plus"></i> Submit Application</a>
                 {% endif %}
                 {% endif %}
             </div>
             
-            <div class="card">
-                <h3><i class="fas fa-print"></i> Quick Actions</h3>
+            <div class="dashboard-card">
+                <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
                 {% if application %}
-                <a href="/student/download-invoice/{{ application.appid }}" class="btn btn-sm"><i class="fas fa-download"></i> Download Invoice</a>
+                <a href="/student/download-invoice/{{ application.appid }}" class="btn-dashboard btn-dashboard-sm"><i class="fas fa-download"></i> Download Invoice</a>
                 {% endif %}
-                <a href="/courses" class="btn btn-sm"><i class="fas fa-book"></i> View Courses</a>
-                <a href="/merit-list" class="btn btn-sm"><i class="fas fa-list"></i> Merit List</a>
+                <a href="/courses" class="btn-dashboard btn-dashboard-sm"><i class="fas fa-book"></i> View Courses</a>
+                <a href="/merit-list" class="btn-dashboard btn-dashboard-sm"><i class="fas fa-list"></i> Merit List</a>
             </div>
         </div>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

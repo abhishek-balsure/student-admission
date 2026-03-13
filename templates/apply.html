@@ -1,0 +1,823 @@
+{% extends "base.html" %}
+
+{% block title %}Application Form{% endblock %}
+
+{% block extra_css %}
+<style>
+    .apply-page {
+        min-height: calc(100vh - 250px);
+        padding: 2rem 0;
+        background: var(--background);
+    }
+    .apply-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    .apply-card {
+        background: white;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+    }
+    .apply-header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        padding: 1.5rem 2rem;
+        color: white;
+    }
+    .apply-header h2 {
+        font-family: 'Playfair Display', serif;
+        margin-bottom: 0.5rem;
+    }
+    .apply-header p {
+        opacity: 0.9;
+        font-size: 0.9rem;
+    }
+    
+    .progress-container {
+        padding: 2rem;
+        background: white;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .progress-steps {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+    }
+    .progress-steps::before {
+        content: '';
+        position: absolute;
+        top: 20px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--border-color);
+        z-index: 1;
+    }
+    .progress-bar {
+        position: absolute;
+        top: 20px;
+        left: 0;
+        height: 3px;
+        background: var(--secondary);
+        z-index: 2;
+        transition: width 0.4s ease;
+    }
+    .step-item {
+        position: relative;
+        z-index: 3;
+        text-align: center;
+        flex: 1;
+    }
+    .step-number {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--border-color);
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        margin: 0 auto 0.5rem;
+        transition: all 0.3s ease;
+    }
+    .step-item.active .step-number,
+    .step-item.completed .step-number {
+        background: var(--secondary);
+        color: white;
+    }
+    .step-item.completed .step-number {
+        background: var(--success);
+    }
+    .step-label {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+    .step-item.active .step-label {
+        color: var(--primary);
+    }
+    
+    .form-body {
+        padding: 2rem;
+    }
+    .form-step {
+        display: none;
+    }
+    .form-step.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .section-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.25rem;
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid var(--border-color);
+    }
+    
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+    .form-group-full {
+        grid-column: span 2;
+    }
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: var(--text-dark);
+        font-size: 0.9rem;
+    }
+    .form-label .required {
+        color: var(--danger);
+    }
+    .radio-group, .checkbox-group {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+    .radio-label, .checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+    .radio-label input, .checkbox-label input {
+        accent-color: var(--primary);
+    }
+    .conditional-field {
+        display: none;
+        margin-top: 1rem;
+        padding: 1rem;
+        background: var(--background);
+        border-radius: var(--radius-sm);
+    }
+    .conditional-field.show {
+        display: block;
+    }
+    
+    .btn-group {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-color);
+    }
+    .btn-nav {
+        padding: 0.75rem 2rem;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .btn-prev {
+        background: var(--border-color);
+        color: var(--text-dark);
+    }
+    .btn-prev:hover {
+        background: #ccc;
+    }
+    .btn-next {
+        background: var(--primary);
+        color: white;
+    }
+    .btn-next:hover {
+        background: var(--primary-dark);
+    }
+    .btn-submit {
+        background: linear-gradient(135deg, var(--success) 0%, #1b5e20 100%);
+        color: white;
+    }
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+    
+    .summary-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .summary-table th, .summary-table td {
+        padding: 0.75rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .summary-table th {
+        background: var(--background);
+        color: var(--text-muted);
+        font-weight: 500;
+        width: 40%;
+    }
+    .summary-table td {
+        color: var(--text-dark);
+    }
+    
+    .success-message {
+        text-align: center;
+        padding: 3rem 2rem;
+    }
+    .success-message i {
+        font-size: 4rem;
+        color: var(--success);
+        margin-bottom: 1rem;
+    }
+    .success-message h3 {
+        color: var(--success);
+        margin-bottom: 0.5rem;
+    }
+    .app-number {
+        background: var(--primary);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: var(--radius-md);
+        font-size: 1.5rem;
+        font-weight: 700;
+        display: inline-block;
+        margin: 1rem 0;
+    }
+    
+    .seats-info {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-left: 0.5rem;
+    }
+    .seats-info.available {
+        color: var(--success);
+    }
+    .seats-info.limited {
+        color: var(--warning);
+    }
+    .seats-info.full {
+        color: var(--danger);
+    }
+    
+    @media (max-width: 768px) {
+        .form-grid { grid-template-columns: 1fr; }
+        .form-group-full { grid-column: span 1; }
+        .progress-steps { flex-wrap: wrap; gap: 1rem; }
+        .step-item { flex: 0 0 33.33%; }
+        .progress-steps::before, .progress-bar { display: none; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="apply-page">
+    <div class="apply-container">
+        <div class="apply-card">
+            <div class="apply-header">
+                <h2><i class="fas fa-clipboard-list"></i> Admission Application Form</h2>
+                <p>Sarhad College of Arts, Commerce & Science | Academic Year 2025-26</p>
+            </div>
+            
+            {% if application_submitted %}
+            <div class="form-body">
+                <div class="success-message">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>Application Submitted Successfully!</h3>
+                    <p>Your application has been submitted successfully.</p>
+                    <div class="app-number">{{ application_number }}</div>
+                    <p>Please note down your application number for future reference.</p>
+                    <a href="{{ url_for('student_dashboard') }}" class="btn btn-primary mt-3">Go to Dashboard</a>
+                </div>
+            </div>
+            {% else %}
+            <div class="progress-container">
+                <div class="progress-steps">
+                    <div class="progress-bar" id="progressBar"></div>
+                    <div class="step-item active" data-step="1">
+                        <div class="step-number">1</div>
+                        <div class="step-label">Personal Info</div>
+                    </div>
+                    <div class="step-item" data-step="2">
+                        <div class="step-number">2</div>
+                        <div class="step-label">Academic</div>
+                    </div>
+                    <div class="step-item" data-step="3">
+                        <div class="step-number">3</div>
+                        <div class="step-label">Course</div>
+                    </div>
+                    <div class="step-item" data-step="4">
+                        <div class="step-number">4</div>
+                        <div class="step-label">Address</div>
+                    </div>
+                    <div class="step-item" data-step="5">
+                        <div class="step-number">5</div>
+                        <div class="step-label">Review</div>
+                    </div>
+                </div>
+            </div>
+            
+            <form method="POST" action="{{ url_for('apply') }}" id="applicationForm">
+                <div class="form-body">
+                    <!-- STEP 1: Personal Information -->
+                    <div class="form-step active" data-step="1">
+                        <h3 class="section-title"><i class="fas fa-user"></i> Step 1: Personal Information</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Full Name <span class="required">*</span></label>
+                                <input type="text" name="full_name" class="form-control" value="{{ saved.full_name or '' }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Father's Name <span class="required">*</span></label>
+                                <input type="text" name="father_name" class="form-control" value="{{ saved.father_name or '' }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Mother's Name <span class="required">*</span></label>
+                                <input type="text" name="mother_name" class="form-control" value="{{ saved.mother_name or '' }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Date of Birth <span class="required">*</span></label>
+                                <input type="date" name="dob" class="form-control" value="{{ saved.dob or '' }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Gender <span class="required">*</span></label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="gender" value="Male" {% if saved.gender == 'Male' %}checked{% endif %} required> Male</label>
+                                    <label class="radio-label"><input type="radio" name="gender" value="Female" {% if saved.gender == 'Female' %}checked{% endif %}> Female</label>
+                                    <label class="radio-label"><input type="radio" name="gender" value="Other" {% if saved.gender == 'Other' %}checked{% endif %}> Other</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Nationality <span class="required">*</span></label>
+                                <select name="nationality" class="form-control" required>
+                                    <option value="Indian" {% if saved.nationality == 'Indian' %}selected{% endif %}>Indian</option>
+                                    <option value="NRI" {% if saved.nationality == 'NRI' %}selected{% endif %}>NRI</option>
+                                    <option value="PIO" {% if saved.nationality == 'PIO' %}selected{% endif %}>PIO</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Religion</label>
+                                <input type="text" name="religion" class="form-control" value="{{ saved.religion or '' }}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Category <span class="required">*</span></label>
+                                <select name="category" class="form-control" required>
+                                    <option value="">Select</option>
+                                    <option value="General" {% if saved.category == 'General' %}selected{% endif %}>General</option>
+                                    <option value="OBC" {% if saved.category == 'OBC' %}selected{% endif %}>OBC</option>
+                                    <option value="SC" {% if saved.category == 'SC' %}selected{% endif %}>SC</option>
+                                    <option value="ST" {% if saved.category == 'ST' %}selected{% endif %}>ST</option>
+                                    <option value="NT" {% if saved.category == 'NT' %}selected{% endif %}>NT</option>
+                                    <option value="SBC" {% if saved.category == 'SBC' %}selected{% endif %}>SBC</option>
+                                    <option value="EWS" {% if saved.category == 'EWS' %}selected{% endif %}>EWS</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Caste</label>
+                                <input type="text" name="caste" class="form-control" value="{{ saved.caste or '' }}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Domicile State <span class="required">*</span></label>
+                                <select name="domicile_state" class="form-control" required>
+                                    <option value="">Select State</option>
+                                    <option value="Maharashtra" {% if saved.domicile_state == 'Maharashtra' %}selected{% endif %}>Maharashtra</option>
+                                    <option value="Other" {% if saved.domicile_state == 'Other' %}selected{% endif %}>Other State</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Aadhaar Number</label>
+                                <input type="text" name="aadhaar" class="form-control" placeholder="XXXX XXXX XXXX" value="{{ saved.aadhaar or '' }}" maxlength="14">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Differently Abled <span class="required">*</span></label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="differently_abled" value="No" {% if saved.differently_abled != 'Yes' %}checked{% endif %} onchange="toggleConditional(this, 'disability-type')" required> No</label>
+                                    <label class="radio-label"><input type="radio" name="differently_abled" value="Yes" {% if saved.differently_abled == 'Yes' %}checked{% endif %} onchange="toggleConditional(this, 'disability-type')"> Yes</label>
+                                </div>
+                                <div class="conditional-field {% if saved.differently_abled == 'Yes' %}show{% endif %}" id="disability-type">
+                                    <label class="form-label">Type of Disability</label>
+                                    <input type="text" name="disability_type" class="form-control" value="{{ saved.disability_type or '' }}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- STEP 2: Academic Details -->
+                    <div class="form-step" data-step="2">
+                        <h3 class="section-title"><i class="fas fa-graduation-cap"></i> Step 2: Academic Details</h3>
+                        <div class="form-grid">
+                            <div class="form-group-full"><h4 style="color: var(--primary); margin-bottom: 1rem;">SSC (10th)</h4></div>
+                            <div class="form-group">
+                                <label class="form-label">Board <span class="required">*</span></label>
+                                <select name="ssc_board" class="form-control" required>
+                                    <option value="">Select Board</option>
+                                    <option value="SSC Maharashtra" {% if saved.ssc_board == 'SSC Maharashtra' %}selected{% endif %}>SSC Maharashtra</option>
+                                    <option value="CBSE" {% if saved.ssc_board == 'CBSE' %}selected{% endif %}>CBSE</option>
+                                    <option value="ICSE" {% if saved.ssc_board == 'ICSE' %}selected{% endif %}>ICSE</option>
+                                    <option value="Other" {% if saved.ssc_board == 'Other' %}selected{% endif %}>Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">School Name <span class="required">*</span></label>
+                                <input type="text" name="ssc_school" class="form-control" value="{{ saved.ssc_school or '' }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Passing Year <span class="required">*</span></label>
+                                <input type="text" name="ssc_year" class="form-control" value="{{ saved.ssc_year or '' }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Percentage/CGPA <span class="required">*</span></label>
+                                <input type="text" name="ssc_marks" class="form-control" placeholder="e.g., 85.50%" value="{{ saved.ssc_marks or '' }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Seat Number</label>
+                                <input type="text" name="ssc_seat_no" class="form-control" value="{{ saved.ssc_seat_no or '' }}">
+                            </div>
+                            
+                            <div class="form-group-full"><h4 style="color: var(--primary); margin: 1.5rem 0 1rem;">HSC (12th) / Diploma</h4></div>
+                            <div class="form-group">
+                                <label class="form-label">Board <span class="required">*</span></label>
+                                <select name="hsc_board" class="form-control" required>
+                                    <option value="">Select Board</option>
+                                    <option value="HSC Maharashtra" {% if saved.hsc_board == 'HSC Maharashtra' %}selected{% endif %}>HSC Maharashtra</option>
+                                    <option value="CBSE" {% if saved.hsc_board == 'CBSE' %}selected{% endif %}>CBSE</option>
+                                    <option value="ICSE" {% if saved.hsc_board == 'ICSE' %}selected{% endif %}>ICSE</option>
+                                    <option value="Diploma" {% if saved.hsc_board == 'Diploma' %}selected{% endif %}>Diploma</option>
+                                    <option value="Other" {% if saved.hsc_board == 'Other' %}selected{% endif %}>Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">College Name <span class="required">*</span></label>
+                                <input type="text" name="hsc_college" class="form-control" value="{{ saved.hsc_college or '' }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Passing Year <span class="required">*</span></label>
+                                <input type="text" name="hsc_year" class="form-control" value="{{ saved.hsc_year or '' }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Percentage <span class="required">*</span></label>
+                                <input type="text" name="hsc_marks" class="form-control" placeholder="e.g., 80.00%" value="{{ saved.hsc_marks or '' }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Stream</label>
+                                <select name="hsc_stream" class="form-control">
+                                    <option value="">Select Stream</option>
+                                    <option value="Science" {% if saved.hsc_stream == 'Science' %}selected{% endif %}>Science</option>
+                                    <option value="Commerce" {% if saved.hsc_stream == 'Commerce' %}selected{% endif %}>Commerce</option>
+                                    <option value="Arts" {% if saved.hsc_stream == 'Arts' %}selected{% endif %}>Arts</option>
+                                    <option value="Diploma" {% if saved.hsc_stream == 'Diploma' %}selected{% endif %}>Diploma</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Gap Year? <span class="required">*</span></label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="gap_year" value="No" {% if saved.gap_year != 'Yes' %}checked{% endif %} onchange="toggleConditional(this, 'gap-reason')" required> No</label>
+                                    <label class="radio-label"><input type="radio" name="gap_year" value="Yes" {% if saved.gap_year == 'Yes' %}checked{% endif %} onchange="toggleConditional(this, 'gap-reason')"> Yes</label>
+                                </div>
+                                <div class="conditional-field {% if saved.gap_year == 'Yes' %}show{% endif %}" id="gap-reason">
+                                    <label class="form-label">Reason for Gap</label>
+                                    <input type="text" name="gap_reason" class="form-control" value="{{ saved.gap_reason or '' }}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Previously Admitted to Sarhad?</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="previous_admission" value="No" {% if saved.previous_admission != 'Yes' %}checked{% endif %}> No</label>
+                                    <label class="radio-label"><input type="radio" name="previous_admission" value="Yes" {% if saved.previous_admission == 'Yes' %}checked{% endif %}> Yes</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- STEP 3: Course Selection -->
+                    <div class="form-step" data-step="3">
+                        <h3 class="section-title"><i class="fas fa-book"></i> Step 3: Course Selection</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Course Preference 1 <span class="required">*</span></label>
+                                <select name="course_pref_1" class="form-control" required>
+                                    <option value="">Select Course</option>
+                                    <option value="BCA" {% if saved.course_pref_1 == 'BCA' %}selected{% endif %}>BCA (60 seats)</option>
+                                    <option value="BSc CS" {% if saved.course_pref_1 == 'BSc CS' %}selected{% endif %}>BSc CS (60 seats)</option>
+                                    <option value="BA" {% if saved.course_pref_1 == 'BA' %}selected{% endif %}>BA (120 seats)</option>
+                                    <option value="BCom" {% if saved.course_pref_1 == 'BCom' %}selected{% endif %}>BCom (120 seats)</option>
+                                    <option value="BCom (BM)" {% if saved.course_pref_1 == 'BCom (BM)' %}selected{% endif %}>BCom BM (60 seats)</option>
+                                    <option value="BCom (CA)" {% if saved.course_pref_1 == 'BCom (CA)' %}selected{% endif %}>BCom CA (60 seats)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Course Preference 2</label>
+                                <select name="course_pref_2" class="form-control">
+                                    <option value="">Select Course</option>
+                                    <option value="BCA" {% if saved.course_pref_2 == 'BCA' %}selected{% endif %}>BCA</option>
+                                    <option value="BSc CS" {% if saved.course_pref_2 == 'BSc CS' %}selected{% endif %}>BSc CS</option>
+                                    <option value="BA" {% if saved.course_pref_2 == 'BA' %}selected{% endif %}>BA</option>
+                                    <option value="BCom" {% if saved.course_pref_2 == 'BCom' %}selected{% endif %}>BCom</option>
+                                    <option value="BCom (BM)" {% if saved.course_pref_2 == 'BCom (BM)' %}selected{% endif %}>BCom BM</option>
+                                    <option value="BCom (CA)" {% if saved.course_pref_2 == 'BCom (CA)' %}selected{% endif %}>BCom CA</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Course Preference 3</label>
+                                <select name="course_pref_3" class="form-control">
+                                    <option value="">Select Course</option>
+                                    <option value="BCA" {% if saved.course_pref_3 == 'BCA' %}selected{% endif %}>BCA</option>
+                                    <option value="BSc CS" {% if saved.course_pref_3 == 'BSc CS' %}selected{% endif %}>BSc CS</option>
+                                    <option value="BA" {% if saved.course_pref_3 == 'BA' %}selected{% endif %}>BA</option>
+                                    <option value="BCom" {% if saved.course_pref_3 == 'BCom' %}selected{% endif %}>BCom</option>
+                                    <option value="BCom (BM)" {% if saved.course_pref_3 == 'BCom (BM)' %}selected{% endif %}>BCom BM</option>
+                                    <option value="BCom (CA)" {% if saved.course_pref_3 == 'BCom (CA)' %}selected{% endif %}>BCom CA</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Medium of Instruction <span class="required">*</span></label>
+                                <select name="medium" class="form-control" required>
+                                    <option value="">Select</option>
+                                    <option value="English" {% if saved.medium == 'English' %}selected{% endif %}>English</option>
+                                    <option value="Marathi" {% if saved.medium == 'Marathi' %}selected{% endif %}>Marathi</option>
+                                    <option value="Semi-English" {% if saved.medium == 'Semi-English' %}selected{% endif %}>Semi-English</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Hostel Required?</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="hostel" value="No" {% if saved.hostel != 'Yes' %}checked{% endif %}> No</label>
+                                    <label class="radio-label"><input type="radio" name="hostel" value="Yes" {% if saved.hostel == 'Yes' %}checked{% endif %}> Yes</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- STEP 4: Contact & Address -->
+                    <div class="form-step" data-step="4">
+                        <h3 class="section-title"><i class="fas fa-address-card"></i> Step 4: Contact & Address</h3>
+                        <div class="form-grid">
+                            <div class="form-group-full"><h4 style="color: var(--primary); margin-bottom: 1rem;">Permanent Address</h4></div>
+                            <div class="form-group">
+                                <label class="form-label">Flat/House No.</label>
+                                <input type="text" name="perm_house_no" class="form-control" value="{{ saved.perm_house_no or '' }}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Street</label>
+                                <input type="text" name="perm_street" class="form-control" value="{{ saved.perm_street or '' }}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">City <span class="required">*</span></label>
+                                <input type="text" name="perm_city" class="form-control" value="{{ saved.perm_city or '' }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">District <span class="required">*</span></label>
+                                <input type="text" name="perm_district" class="form-control" value="{{ saved.perm_district or '' }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">State <span class="required">*</span></label>
+                                <select name="perm_state" class="form-control" required>
+                                    <option value="">Select</option>
+                                    <option value="Maharashtra" {% if saved.perm_state == 'Maharashtra' %}selected{% endif %}>Maharashtra</option>
+                                    <option value="Other" {% if saved.perm_state == 'Other' %}selected{% endif %}>Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">PIN Code <span class="required">*</span></label>
+                                <input type="text" name="perm_pin" class="form-control" value="{{ saved.perm_pin or '' }}" required>
+                            </div>
+                            
+                            <div class="form-group-full">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="sameAddress" {% if saved.corr_same_perm %}checked{% endif %} onchange="copyAddress()">
+                                    Same as permanent address
+                                </label>
+                            </div>
+                            
+                            <div class="form-group-full"><h4 style="color: var(--primary); margin: 1.5rem 0 1rem;">Correspondence Address</h4></div>
+                            <div class="form-group">
+                                <label class="form-label">Flat/House No.</label>
+                                <input type="text" name="corr_house_no" class="form-control" value="{{ saved.corr_house_no or '' }}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Street</label>
+                                <input type="text" name="corr_street" class="form-control" value="{{ saved.corr_street or '' }}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">City</label>
+                                <input type="text" name="corr_city" class="form-control" value="{{ saved.corr_city or '' }}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">District</label>
+                                <input type="text" name="corr_district" class="form-control" value="{{ saved.corr_district or '' }}">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">State</label>
+                                <select name="corr_state" class="form-control">
+                                    <option value="">Select</option>
+                                    <option value="Maharashtra" {% if saved.corr_state == 'Maharashtra' %}selected{% endif %}>Maharashtra</option>
+                                    <option value="Other" {% if saved.corr_state == 'Other' %}selected{% endif %}>Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">PIN Code</label>
+                                <input type="text" name="corr_pin" class="form-control" value="{{ saved.corr_pin or '' }}">
+                            </div>
+                            
+                            <div class="form-group-full"><h4 style="color: var(--primary); margin: 1.5rem 0 1rem;">Emergency Contact</h4></div>
+                            <div class="form-group">
+                                <label class="form-label">Emergency Contact Name <span class="required">*</span></label>
+                                <input type="text" name="emergency_name" class="form-control" value="{{ saved.emergency_name or '' }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Emergency Contact Number <span class="required">*</span></label>
+                                <input type="tel" name="emergency_contact" class="form-control" value="{{ saved.emergency_contact or '' }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Parent/Guardian Mobile <span class="required">*</span></label>
+                                <input type="tel" name="parent_mobile" class="form-control" value="{{ saved.parent_mobile or '' }}" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- STEP 5: Review & Submit -->
+                    <div class="form-step" data-step="5">
+                        <h3 class="section-title"><i class="fas fa-check-circle"></i> Step 5: Review & Submit</h3>
+                        <p class="text-muted mb-3">Please review all your information before submitting.</p>
+                        
+                        <table class="summary-table">
+                            <tr><th>Full Name</th><td id="summary-full_name">-</td></tr>
+                            <tr><th>Father's Name</th><td id="summary-father_name">-</td></tr>
+                            <tr><th>Mother's Name</th><td id="summary-mother_name">-</td></tr>
+                            <tr><th>Date of Birth</th><td id="summary-dob">-</td></tr>
+                            <tr><th>Gender</th><td id="summary-gender">-</td></tr>
+                            <tr><th>Category</th><td id="summary-category">-</td></tr>
+                            <tr><th>SSC Marks</th><td id="summary-ssc_marks">-</td></tr>
+                            <tr><th>HSC Marks</th><td id="summary-hsc_marks">-</td></tr>
+                            <tr><th>Course Preference 1</th><td id="summary-course_pref_1">-</td></tr>
+                            <tr><th>Medium</th><td id="summary-medium">-</td></tr>
+                            <tr><th>City</th><td id="summary-perm_city">-</td></tr>
+                        </table>
+                        
+                        <div class="mt-4">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="certify" required>
+                                I certify that all information provided is true and correct. <span class="required">*</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Navigation Buttons -->
+                    <div class="btn-group">
+                        <button type="button" class="btn-nav btn-prev" id="prevBtn" onclick="prevStep()" style="display: none;">
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </button>
+                        <button type="button" class="btn-nav btn-next" id="nextBtn" onclick="nextStep()">
+                            Next <i class="fas fa-arrow-right"></i>
+                        </button>
+                        <button type="submit" class="btn-nav btn-submit" id="submitBtn" style="display: none;">
+                            <i class="fas fa-check"></i> Submit Application
+                        </button>
+                    </div>
+                </div>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let currentStep = 1;
+    const totalSteps = 5;
+    
+    function updateProgress() {
+        const progressBar = document.getElementById('progressBar');
+        const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+        progressBar.style.width = progress + '%';
+        
+        document.querySelectorAll('.step-item').forEach((item, index) => {
+            const stepNum = index + 1;
+            item.classList.remove('active', 'completed');
+            if (stepNum < currentStep) {
+                item.classList.add('completed');
+            } else if (stepNum === currentStep) {
+                item.classList.add('active');
+            }
+        });
+        
+        document.querySelectorAll('.form-step').forEach((step, index) => {
+            step.classList.remove('active');
+            if (index + 1 === currentStep) {
+                step.classList.add('active');
+                if (currentStep === 5) {
+                    populateSummary();
+                }
+            }
+        });
+        
+        document.getElementById('prevBtn').style.display = currentStep === 1 ? 'none' : 'inline-flex';
+        document.getElementById('nextBtn').style.display = currentStep === totalSteps ? 'none' : 'inline-flex';
+        document.getElementById('submitBtn').style.display = currentStep === totalSteps ? 'inline-flex' : 'none';
+    }
+    
+    function validateStep(step) {
+        const stepEl = document.querySelector(`.form-step[data-step="${step}"]`);
+        const requiredFields = stepEl.querySelectorAll('[required]');
+        let isValid = true;
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                isValid = false;
+                field.style.borderColor = 'var(--danger)';
+            } else {
+                field.style.borderColor = '';
+            }
+        });
+        
+        return isValid;
+    }
+    
+    function nextStep() {
+        if (!validateStep(currentStep)) {
+            alert('Please fill all required fields!');
+            return;
+        }
+        
+        saveToSession();
+        
+        if (currentStep < totalSteps) {
+            currentStep++;
+            updateProgress();
+        }
+    }
+    
+    function prevStep() {
+        if (currentStep > 1) {
+            currentStep--;
+            updateProgress();
+        }
+    }
+    
+    function toggleConditional(element, targetId) {
+        const target = document.getElementById(targetId);
+        if (element.value === 'Yes') {
+            target.classList.add('show');
+        } else {
+            target.classList.remove('show');
+        }
+    }
+    
+    function copyAddress() {
+        const checkbox = document.getElementById('sameAddress');
+        if (checkbox.checked) {
+            document.querySelector('input[name="corr_house_no"]').value = document.querySelector('input[name="perm_house_no"]').value;
+            document.querySelector('input[name="corr_street"]').value = document.querySelector('input[name="perm_street"]').value;
+            document.querySelector('input[name="corr_city"]').value = document.querySelector('input[name="perm_city"]').value;
+            document.querySelector('input[name="corr_district"]').value = document.querySelector('input[name="perm_district"]').value;
+            document.querySelector('select[name="corr_state"]').value = document.querySelector('select[name="perm_state"]').value;
+            document.querySelector('input[name="corr_pin"]').value = document.querySelector('input[name="perm_pin"]').value;
+        }
+    }
+    
+    function populateSummary() {
+        const fields = [
+            'full_name', 'father_name', 'mother_name', 'dob', 'gender', 'category',
+            'ssc_marks', 'hsc_marks', 'course_pref_1', 'medium', 'perm_city'
+        ];
+        
+        fields.forEach(field => {
+            const el = document.querySelector(`[name="${field}"]`);
+            const summaryEl = document.getElementById(`summary-${field}`);
+            if (el && summaryEl) {
+                summaryEl.textContent = el.value || '-';
+            }
+        });
+    }
+    
+    function saveToSession() {
+        const form = document.getElementById('applicationForm');
+        const formData = new FormData(form);
+        const data = {};
+        
+        formData.forEach((value, key) => {
+            data[key] = value;
+        });
+        
+        fetch('{{ url_for("apply") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ save_progress: true, ...data })
+        }).catch(err => console.log('Progress saved'));
+    }
+    
+    document.addEventListener('DOMContentLoaded', updateProgress);
+</script>
+{% endblock %}

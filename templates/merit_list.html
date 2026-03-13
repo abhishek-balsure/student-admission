@@ -1,97 +1,230 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Merit List - EduPortal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Poppins', sans-serif; background: #E9F1FA; }
-        .navbar { background: white; padding: 12px 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
-        .navbar .left { display: flex; align-items: center; gap: 30px; }
-        .navbar .logo { color: #00ABE4; font-size: 22px; font-weight: 700; }
-        .navbar .links { display: flex; gap: 20px; }
-        .navbar .links a { color: #333; text-decoration: none; font-weight: 500; padding: 8px 15px; border-radius: 8px; transition: 0.3s; }
-        .navbar .links a:hover, .navbar .links a.active { background: #E9F1FA; color: #00ABE4; }
-        .navbar .right { display: flex; align-items: center; gap: 15px; }
-        .btn-login { background: #00ABE4; color: white; padding: 8px 20px; border-radius: 20px; text-decoration: none; font-weight: 500; }
-        .merit-page { padding: 3rem 2rem; min-height: calc(100vh - 80px); }
-        .merit-container { max-width: 1000px; margin: 0 auto; }
-        .page-header { text-align: center; margin-bottom: 3rem; }
-        .page-header h1 { font-size: 2.5rem; color: #333; margin-bottom: 0.5rem; }
-        .page-header p { color: #666; }
-        .merit-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
-        .merit-table { width: 100%; border-collapse: collapse; }
-        .merit-table thead { background: linear-gradient(135deg, #00ABE4 0%, #009B4D 100%); color: white; }
-        .merit-table th { padding: 1rem; text-align: left; font-weight: 600; }
-        .merit-table td { padding: 1rem; border-bottom: 1px solid #eee; color: #333; }
-        .merit-table tbody tr:hover { background: #f9f9f9; }
-        .rank-badge { display: inline-flex; align-items: center; justify-content: center; width: 35px; height: 35px; border-radius: 50%; font-weight: 700; font-size: 0.9rem; }
-        .rank-1 { background: linear-gradient(135deg, #ffd700 0%, #ffb700 100%); color: #333; }
-        .rank-2 { background: linear-gradient(135deg, #c0c0c0 0%, #a0a0a0 100%); color: #333; }
-        .rank-3 { background: linear-gradient(135deg, #cd7f32 0%, #b87333 100%); color: white; }
-        .rank-other { background: #f0f0f0; color: #666; }
-        .status-badge { padding: 0.3rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
-        .status-approved { background: rgba(39, 174, 96, 0.15); color: #27ae60; }
-        .status-pending { background: rgba(243, 156, 18, 0.15); color: #f39c12; }
-        .empty-state { text-align: center; padding: 3rem; color: #666; }
-        .empty-state i { font-size: 3rem; margin-bottom: 1rem; color: #ccc; }
-    </style>
-</head>
-<body>
-    <nav class="navbar">
-        <div class="left">
-            <div class="logo"><i class="fas fa-graduation-cap"></i> EduPortal</div>
-            <div class="links">
-                <a href="/">Home</a>
-                <a href="/courses">Courses</a>
-                <a href="/merit-list" class="active">Merit List</a>
-                <a href="/contact">Contact</a>
-            </div>
-        </div>
-        <div class="right">
-            <a href="/login" class="btn-login">Login</a>
-        </div>
-    </nav>
+{% extends "base.html" %}
 
-    <div class="merit-page">
-        <div class="merit-container">
-            <div class="page-header">
-                <h1>Merit List</h1>
-                <p>Ranked by entrance examination score</p>
-            </div>
-            <div class="merit-card">
-                <table class="merit-table">
-                    <thead>
-                        <tr>
-                            <th>Rank</th>
-                            <th>Name</th>
-                            <th>Course</th>
-                            <th>Entrance Score</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for student in students %}
-                        <tr>
-                            <td><span class="rank-badge {% if student.merit_rank == 1 %}rank-1{% elif student.merit_rank == 2 %}rank-2{% elif student.merit_rank == 3 %}rank-3{% else %}rank-other{% endif %}">{{ student.merit_rank }}</span></td>
-                            <td>
-                                <strong>{{ student.name }}</strong><br>
-                                <small style="color: #666;">{{ student.student_id }}</small>
-                            </td>
-                            <td>{{ student.course }}</td>
-                            <td><strong>{{ student.entrance_score }}</strong></td>
-                            <td><span class="status-badge {% if student.status == 'approved' %}status-approved{% else %}status-pending{% endif %}">{{ student.status }}</span></td>
-                        </tr>
-                        {% else %}
-                        <tr><td colspan="5"><div class="empty-state"><i class="fas fa-list"></i><p>No students in merit list yet</p></div></td></tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+{% block title %}Merit List{% endblock %}
+
+{% block extra_css %}
+<style>
+    .merit-page {
+        min-height: calc(100vh - 250px);
+        padding: 2rem 0;
+        background: var(--background);
+    }
+    .merit-container {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    
+    .page-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    .page-header h1 {
+        font-family: 'Playfair Display', serif;
+        color: var(--primary);
+    }
+    
+    .info-banner {
+        background: rgba(249, 168, 37, 0.1);
+        border-left: 4px solid var(--warning);
+        padding: 1rem;
+        border-radius: var(--radius-sm);
+        margin-bottom: 2rem;
+    }
+    
+    .not-published {
+        background: rgba(26, 35, 126, 0.05);
+        border: 2px dashed var(--primary);
+        border-radius: var(--radius-lg);
+        padding: 3rem;
+        text-align: center;
+    }
+    .not-published i {
+        font-size: 4rem;
+        color: var(--primary);
+        margin-bottom: 1rem;
+    }
+    .not-published h3 {
+        color: var(--primary);
+    }
+    
+    .search-box {
+        background: white;
+        padding: 1.5rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        margin-bottom: 2rem;
+    }
+    
+    .course-tabs {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-color);
+    }
+    .course-tab {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        background: none;
+        font-weight: 500;
+        color: var(--text-muted);
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -2px;
+        transition: all 0.3s ease;
+    }
+    .course-tab:hover { color: var(--primary); }
+    .course-tab.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+    }
+    
+    .merit-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+    }
+    .merit-table th {
+        background: var(--primary);
+        color: white;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+    }
+    .merit-table td {
+        padding: 0.875rem 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .merit-table tbody tr:hover {
+        background: rgba(26, 35, 126, 0.02);
+    }
+    
+    .rank-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        font-weight: 700;
+    }
+    .rank-1 { background: linear-gradient(135deg, #ffd700, #ffb700); color: #333; }
+    .rank-2 { background: linear-gradient(135deg, #c0c0c0, #a0a0a0); color: #333; }
+    .rank-3 { background: linear-gradient(135deg, #cd7f32, #b87333); color: white; }
+    .rank-other { background: var(--background); color: var(--text-muted); }
+    
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    .status-selected { background: rgba(46, 125, 50, 0.15); color: var(--success); }
+    .status-waitlist { background: rgba(249, 168, 37, 0.15); color: var(--warning); }
+    
+    .publication-date {
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-top: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="merit-page">
+    <div class="merit-container">
+        <div class="page-header">
+            <h1 class="section-title text-center">Merit List 2025-26</h1>
+            <p class="text-muted">Sarhad College of Arts, Commerce & Science, Katraj, Pune</p>
         </div>
+        
+        {% if not merit_published %}
+        <div class="not-published">
+            <i class="fas fa-clock"></i>
+            <h3>Merit List Not Published Yet</h3>
+            <p>The merit list will be published on <strong>15 August 2025</strong>.</p>
+            <p class="text-muted">Please check back later or register to receive notifications.</p>
+        </div>
+        {% else %}
+        
+        <div class="search-box">
+            <h4 class="mb-3"><i class="fas fa-search me-2"></i>Check Your Rank</h4>
+            <form method="GET" action="{{ url_for('merit_list') }}">
+                <div class="d-flex gap-2">
+                    <input type="text" name="search" class="form-control" placeholder="Enter Application Number" value="{{ search }}">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </form>
+            {% if search_result %}
+            <div class="mt-3 p-3" style="background: var(--background); border-radius: var(--radius-sm);">
+                {% if search_result.found %}
+                <p class="mb-1"><strong>Application No:</strong> {{ search_result.student_id }}</p>
+                <p class="mb-1"><strong>Name:</strong> {{ search_result.name }}</p>
+                <p class="mb-1"><strong>Course:</strong> {{ search_result.course }}</p>
+                <p class="mb-0"><strong>Rank:</strong> {{ search_result.rank }}</p>
+                {% else %}
+                <p class="text-danger mb-0">Application number not found in merit list.</p>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="course-tabs">
+            {% for course in courses %}
+            <button class="course-tab {% if selected_course == course %}active{% endif %}" onclick="location.href='{{ url_for('merit_list', course=course) }}'">{{ course }}</button>
+            {% endfor %}
+        </div>
+        
+        <table class="merit-table">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Application No</th>
+                    <th>Student Name</th>
+                    <th>Category</th>
+                    <th>12th %</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in merit_list %}
+                <tr>
+                    <td>
+                        <span class="rank-badge {% if loop.index == 1 %}rank-1{% elif loop.index == 2 %}rank-2{% elif loop.index == 3 %}rank-3{% else %}rank-other{% endif %}">
+                            {{ loop.index }}
+                        </span>
+                    </td>
+                    <td>{{ student.student_id }}</td>
+                    <td>{{ student.name }}</td>
+                    <td>{{ student.category }}</td>
+                    <td>{{ student.hsc_marks }}%</td>
+                    <td>
+                        {% if loop.index <= seats %}
+                        <span class="status-badge status-selected">Selected</span>
+                        {% else %}
+                        <span class="status-badge status-waitlist">Waitlist</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center py-4">No students in merit list for this course yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <p class="publication-date">Published on: 15 August 2025</p>
+        
+        <div class="info-banner mt-4">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Note:</strong> Students appearing in merit list must report for document verification by <strong>25 August 2025</strong>. Failure to do so will result in forfeiture of the seat.
+        </div>
+        {% endif %}
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

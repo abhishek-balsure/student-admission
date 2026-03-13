@@ -1,0 +1,364 @@
+{% extends "base.html" %}
+
+{% block title %}Application Details{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-page {
+        min-height: calc(100vh - 250px);
+        padding: 2rem 0;
+        background: var(--background);
+    }
+    .admin-container {
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+    
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    .page-header h1 {
+        font-family: 'Playfair Display', serif;
+        color: var(--primary);
+        margin: 0;
+    }
+    
+    .sidebar {
+        background: white;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+        padding: 1.5rem;
+    }
+    .sidebar-menu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .sidebar-menu li {
+        margin-bottom: 0.5rem;
+    }
+    .sidebar-menu a {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius-sm);
+        color: var(--text-dark);
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .sidebar-menu a:hover, .sidebar-menu a.active {
+        background: var(--primary);
+        color: white;
+    }
+    
+    .admin-layout {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        gap: 2rem;
+    }
+    @media (max-width: 992px) { .admin-layout { grid-template-columns: 1fr; } }
+    
+    .detail-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+    @media (max-width: 768px) { .detail-grid { grid-template-columns: 1fr; } }
+    
+    .detail-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-md);
+    }
+    .detail-card.full {
+        grid-column: span 2;
+    }
+    @media (max-width: 768px) { .detail-card.full { grid-column: span 1; } }
+    
+    .detail-card h3 {
+        font-family: 'Playfair Display', serif;
+        color: var(--primary);
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid var(--border-color);
+    }
+    
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { color: var(--text-muted); }
+    .info-value { font-weight: 500; }
+    
+    .status-select {
+        padding: 0.5rem;
+        border-radius: var(--radius-sm);
+        border: 2px solid var(--border-color);
+        font-weight: 500;
+    }
+    
+    .documents-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1rem;
+    }
+    @media (max-width: 1200px) { .documents-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 768px) { .documents-grid { grid-template-columns: repeat(2, 1fr); } }
+    
+    .doc-item {
+        text-align: center;
+        padding: 1rem;
+        border: 2px dashed var(--border-color);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .doc-item:hover { border-color: var(--primary); }
+    .doc-item.uploaded {
+        border-style: solid;
+        border-color: var(--success);
+        background: rgba(46, 125, 50, 0.05);
+    }
+    .doc-item i {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        color: var(--text-muted);
+    }
+    .doc-item.uploaded i { color: var(--success); }
+    .doc-item p {
+        font-size: 0.8rem;
+        margin: 0;
+        color: var(--text-muted);
+    }
+    
+    .remarks-box {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        resize: vertical;
+        min-height: 80px;
+    }
+    
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.8);
+    }
+    .modal-content {
+        margin: 5% auto;
+        max-width: 90%;
+        max-height: 90%;
+        background: white;
+        border-radius: var(--radius-lg);
+        overflow: auto;
+    }
+    .modal-header {
+        padding: 1rem 1.5rem;
+        background: var(--primary);
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .modal-body {
+        padding: 1.5rem;
+        text-align: center;
+    }
+    .modal-body img {
+        max-width: 100%;
+        max-height: 70vh;
+    }
+    .close-modal {
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <div class="admin-container">
+        <div class="page-header">
+            <div>
+                <a href="{{ url_for('admin_applications') }}" class="btn btn-outline mb-2"><i class="fas fa-arrow-left me-2"></i> Back to Applications</a>
+                <h1>Application Details</h1>
+            </div>
+            <a href="{{ url_for('logout') }}" class="btn btn-outline"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
+        </div>
+        
+        <div class="admin-layout">
+            <aside>
+                <div class="sidebar">
+                    <ul class="sidebar-menu">
+                        <li><a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                        <li><a href="{{ url_for('admin_applications') }}"><i class="fas fa-users"></i> Applications</a></li>
+                        <li><a href="{{ url_for('admin_merit_list') }}"><i class="fas fa-list-ol"></i> Merit List</a></li>
+                        <li><a href="{{ url_for('admin_messages') }}"><i class="fas fa-envelope"></i> Messages</a></li>
+                        <li><a href="{{ url_for('admin_settings') }}"><i class="fas fa-cog"></i> Settings</a></li>
+                    </ul>
+                </div>
+            </aside>
+            
+            <main>
+                <form method="POST" action="{{ url_for('admin_update_status', appid=application.appid) }}">
+                    <div class="detail-grid">
+                        <div class="detail-card">
+                            <h3><i class="fas fa-user me-2"></i> Personal Information</h3>
+                            <div class="info-row"><span class="info-label">Full Name</span><span class="info-value">{{ student.name }}</span></div>
+                            <div class="info-row"><span class="info-label">DOB</span><span class="info-value">{{ student.dob or '-' }}</span></div>
+                            <div class="info-row"><span class="info-label">Gender</span><span class="info-value">{{ student.gender or '-' }}</span></div>
+                            <div class="info-row"><span class="info-label">Category</span><span class="info-value">{{ student.category }}</span></div>
+                            <div class="info-row"><span class="info-label">Father's Name</span><span class="info-value">{{ student.father_name or '-' }}</span></div>
+                            <div class="info-row"><span class="info-label">Mother's Name</span><span class="info-value">{{ student.mother_name or '-' }}</span></div>
+                            <div class="info-row"><span class="info-label">Mobile</span><span class="info-value">{{ student.contact }}</span></div>
+                            <div class="info-row"><span class="info-label">Email</span><span class="info-value">{{ student.email }}</span></div>
+                        </div>
+                        
+                        <div class="detail-card">
+                            <h3><i class="fas fa-graduation-cap me-2"></i> Academic Details</h3>
+                            <div class="info-row"><span class="info-label">SSC Board</span><span class="info-value">{{ student.ssc_board or '-' }}</span></div>
+                            <div class="info-row"><span class="info-label">SSC School</span><span class="info-value">{{ student.ssc_school or '-' }}</span></div>
+                            <div class="info-row"><span class="info-label">SSC Marks</span><span class="info-value">{{ student.ssc_marks or '-' }}%</span></div>
+                            <div class="info-row"><span class="info-label">HSC Board</span><span class="info-value">{{ student.hsc_board or '-' }}</span></div>
+                            <div class="info-row"><span class="info-label">HSC College</span><span class="info-value">{{ student.hsc_college or '-' }}</span></div>
+                            <div class="info-row"><span class="info-label">HSC Marks</span><span class="info-value">{{ student.hsc_marks or '-' }}%</span></div>
+                            <div class="info-row"><span class="info-label">HSC Stream</span><span class="info-value">{{ student.hsc_stream or '-' }}</span></div>
+                        </div>
+                        
+                        <div class="detail-card">
+                            <h3><i class="fas fa-book me-2"></i> Course Preference</h3>
+                            <div class="info-row"><span class="info-label">Preference 1</span><span class="info-value">{{ student.course_pref_1 or '-' }}</span></div>
+                            <div class="info-row"><span class="info-label">Preference 2</span><span class="info-value">{{ student.course_pref_2 or '-' }}</span></div>
+                            <div class="info-row"><span class="info-label">Preference 3</span><span class="info-value">{{ student.course_pref_3 or '-' }}</span></div>
+                            <div class="info-row"><span class="info-label">Medium</span><span class="info-value">{{ student.medium or '-' }}</span></div>
+                            <div class="info-row"><span class="info-label">Hostel</span><span class="info-value">{{ student.hostel or '-' }}</span></div>
+                        </div>
+                        
+                        <div class="detail-card">
+                            <h3><i class="fas fa-map-marker-alt me-2"></i> Address</h3>
+                            <div class="info-row"><span class="info-label">Permanent</span><span class="info-value">{{ student.perm_address or '-' }}</span></div>
+                            <div class="info-row"><span class="info-label">Correspondence</span><span class="info-value">{{ student.corr_address or '-' }}</span></div>
+                            <div class="info-row"><span class="info-label">Emergency Contact</span><span class="info-value">{{ student.emergency_name or '-' }} ({{ student.emergency_contact or '-' }})</span></div>
+                            <div class="info-row"><span class="info-label">Parent Mobile</span><span class="info-value">{{ student.parent_mobile or '-' }}</span></div>
+                        </div>
+                        
+                        <div class="detail-card full">
+                            <h3><i class="fas fa-file-alt me-2"></i> Uploaded Documents</h3>
+                            <div class="documents-grid">
+                                <div class="doc-item {% if application.doc_photo %}uploaded{% endif %}" onclick="viewDoc('{{ application.doc_photo }}')">
+                                    <i class="fas fa-user"></i>
+                                    <p>Photo</p>
+                                </div>
+                                <div class="doc-item {% if application.doc_signature %}uploaded{% endif %}" onclick="viewDoc('{{ application.doc_signature }}')">
+                                    <i class="fas fa-pen-fancy"></i>
+                                    <p>Signature</p>
+                                </div>
+                                <div class="doc-item {% if application.doc_ssc_marksheet %}uploaded{% endif %}" onclick="viewDoc('{{ application.doc_ssc_marksheet }}')">
+                                    <i class="fas fa-file-alt"></i>
+                                    <p>SSC Marksheet</p>
+                                </div>
+                                <div class="doc-item {% if application.doc_hsc_marksheet %}uploaded{% endif %}" onclick="viewDoc('{{ application.doc_hsc_marksheet }}')">
+                                    <i class="fas fa-file-alt"></i>
+                                    <p>HSC Marksheet</p>
+                                </div>
+                                <div class="doc-item {% if application.doc_hsc_tc %}uploaded{% endif %}" onclick="viewDoc('{{ application.doc_hsc_tc }}')">
+                                    <i class="fas fa-file-pdf"></i>
+                                    <p>HSC TC</p>
+                                </div>
+                                <div class="doc-item {% if application.doc_aadhaar %}uploaded{% endif %}" onclick="viewDoc('{{ application.doc_aadhaar }}')">
+                                    <i class="fas fa-id-card"></i>
+                                    <p>Aadhaar</p>
+                                </div>
+                                <div class="doc-item {% if application.doc_caste_cert %}uploaded{% endif %}" onclick="viewDoc('{{ application.doc_caste_cert }}')">
+                                    <i class="fas fa-certificate"></i>
+                                    <p>Caste Cert</p>
+                                </div>
+                                <div class="doc-item {% if application.doc_income_cert %}uploaded{% endif %}" onclick="viewDoc('{{ application.doc_income_cert }}')">
+                                    <i class="fas fa-file-invoice"></i>
+                                    <p>Income Cert</p>
+                                </div>
+                                <div class="doc-item {% if application.doc_domicile %}uploaded{% endif %}" onclick="viewDoc('{{ application.doc_domicile }}')">
+                                    <i class="fas fa-home"></i>
+                                    <p>Domicile</p>
+                                </div>
+                                <div class="doc-item {% if application.doc_migration %}uploaded{% endif %}" onclick="viewDoc('{{ application.doc_migration }}')">
+                                    <i class="fas fa-exchange-alt"></i>
+                                    <p>Migration</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-card full">
+                            <h3><i class="fas fa-tasks me-2"></i> Update Status</h3>
+                            <div class="d-flex gap-3 align-items-center mb-3">
+                                <label class="form-label mb-0">Application Status:</label>
+                                <select name="status" class="form-control" style="max-width: 200px;">
+                                    <option value="submitted" {% if application.status == 'submitted' %}selected{% endif %}>Submitted</option>
+                                    <option value="under_review" {% if application.status == 'under_review' %}selected{% endif %}>Under Review</option>
+                                    <option value="verified" {% if application.status == 'verified' %}selected{% endif %}>Documents Verified</option>
+                                    <option value="admitted" {% if application.status == 'admitted' %}selected{% endif %}>Admitted</option>
+                                    <option value="rejected" {% if application.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                                </select>
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i> Update</button>
+                            </div>
+                            
+                            <label class="form-label">Remarks (visible to student):</label>
+                            <textarea name="remarks" class="remarks-box" placeholder="Enter remarks for the student...">{{ application.remarks or '' }}</textarea>
+                            <button type="submit" class="btn btn-outline mt-2"><i class="fas fa-save me-2"></i> Save Remarks</button>
+                        </div>
+                    </div>
+                </form>
+            </main>
+        </div>
+    </div>
+    
+    <div id="docModal" class="modal" onclick="closeModal()">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4>Document Preview</h4>
+                <span class="close-modal" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function viewDoc(filename) {
+        if (!filename) return;
+        const modal = document.getElementById('docModal');
+        const body = document.getElementById('modalBody');
+        const ext = filename.split('.').pop().toLowerCase();
+        
+        if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) {
+            body.innerHTML = '<img src="{{ url_for("static", filename="uploads/applications/" + application.appid) }}/' + filename + '">';
+        } else if (ext === 'pdf') {
+            body.innerHTML = '<iframe src="{{ url_for("static", filename="uploads/applications/" + application.appid) }}/' + filename + '" width="100%" height="70vh"></iframe>';
+        } else {
+            body.innerHTML = '<p>Preview not available for this file type</p>';
+        }
+        modal.style.display = 'block';
+    }
+    
+    function closeModal() {
+        document.getElementById('docModal').style.display = 'none';
+    }
+</script>
+{% endblock %}
