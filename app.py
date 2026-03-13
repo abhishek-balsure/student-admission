@@ -846,21 +846,6 @@ def admin_login():
         return redirect(url_for('admin_login'))
     return render_template('admin/login.html')
 
-@app.route('/admin/login', methods=['GET', 'POST'])
-def admin_login_post():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        admin = Admin.query.filter_by(username=username).first()
-        if admin and check_password_hash(admin.password, password):
-            session['admin_id'] = admin.admin_id
-            session['user_type'] = 'admin'
-            flash('Welcome to Admin Panel!', 'success')
-            return redirect(url_for('admin_dashboard'))
-        flash('Invalid credentials!', 'error')
-        return redirect(url_for('admin_login_post'))
-    return redirect(url_for('admin_login'))
-
 @app.route('/admin/dashboard')
 def admin_dashboard():
     if 'admin_id' not in session:
@@ -951,7 +936,6 @@ def admin_merit_list():
     
     course = request.args.get('course', 'BCA')
     
-    # Map course names
     course_map = {
         'BCA': ['BCA', 'Computer Science'],
         'BSc CS': ['BSc CS', 'Computer Science'],
@@ -1024,32 +1008,6 @@ def admin_save_settings():
     flash('Settings saved successfully!', 'success')
     return redirect(url_for('admin_settings'))
 
-@app.route('/admin/export-csv')
-def admin_export_csv():
-    if 'admin_id' not in session:
-        return redirect(url_for('admin_login'))
-    
-    applications = Application.query.join(Student).all()
-    output = io.StringIO()
-    writer = csv.writer(output)
-    writer.writerow(['App No', 'Name', 'Email', 'Course', 'Category', '10th %', '12th %', 'Status'])
-    
-    for app in applications:
-        student = app.student
-        writer.writerow([app.appid, student.name, student.email, student.course_pref_1 or student.course,
-                        student.category, student.ssc_marks, student.hsc_marks, app.status])
-    
-    return send_file(io.BytesIO(output.getvalue().encode('utf-8')), mimetype='text/csv', 
-                   as_attachment=True, download_name='applications.csv')
-
-@app.route('/admin/export-excel')
-def admin_export_excel():
-    return admin_export_csv()
-
-@app.route('/admin/export-merit-pdf')
-def admin_export_merit_pdf():
-    return admin_export_csv()
-
 @app.route('/admin/messages')
 def admin_messages():
     if 'admin_id' not in session:
@@ -1057,24 +1015,8 @@ def admin_messages():
     messages = Contact.query.order_by(Contact.created_at.desc()).all()
     return render_template('admin/messages.html', messages=messages)
 
-@app.route('/admin/update-status/<appid>/<status>')
-def update_status(appid, status):
-    if 'admin_id' not in session:
-        return redirect(url_for('admin_login'))
-    application = Application.query.filter_by(appid=appid).first()
-    if application:
-        application.status = status
-        student = Student.query.filter_by(student_id=application.studentid).first()
-        if student:
-            student.status = status
-            if status == 'approved':
-                calculate_merit_rank()
-        db.session.commit()
-        flash(f'Application {status}!', 'success')
-    return redirect(url_for('admin_dashboard'))
-
 @app.route('/admin/export/<format>')
-def export_data(format):
+def admin_export_csv(format):
     if 'admin_id' not in session:
         return redirect(url_for('admin_login'))
     applications = db.session.query(Student, Application).outerjoin(Application, Student.student_id == Application.studentid).all()
@@ -1087,6 +1029,13 @@ def export_data(format):
                 student.payment_status, app.appid if app else 'N/A', app.status if app else 'N/A', student.merit_rank or 'N/A'])
         return send_file(io.BytesIO(output.getvalue().encode('utf-8')), mimetype='text/csv', as_attachment=True, download_name='students.csv')
     return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/export-merit-pdf')
+def admin_export_merit_pdf():
+    if 'admin_id' not in session:
+        return redirect(url_for('admin_login'))
+    flash('PDF export coming soon!', 'info')
+    return redirect(url_for('admin_merit_list'))
 
 @app.route('/admin/student/<student_id>')
 def admin_student_detail(student_id):

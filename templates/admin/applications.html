@@ -208,8 +208,8 @@
                     <div class="table-header">
                         <span>Showing {{ applications|length }} applications</span>
                         <div class="bulk-actions">
-                            <a href="{{ url_for('admin_export_csv') }}" class="btn btn-sm btn-outline"><i class="fas fa-file-csv"></i> CSV</a>
-                            <a href="{{ url_for('admin_export_excel') }}" class="btn btn-sm btn-outline"><i class="fas fa-file-excel"></i> Excel</a>
+                            <a href="{{ url_for('admin_export_csv', format='csv') }}" class="btn btn-sm btn-outline"><i class="fas fa-file-csv"></i> CSV</a>
+                            <a href="{{ url_for('admin_export_csv', format='excel') }}" class="btn btn-sm btn-outline"><i class="fas fa-file-excel"></i> Excel</a>
                         </div>
                     </div>
                     <div style="overflow-x: auto;">
