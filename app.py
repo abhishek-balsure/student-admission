@@ -1055,7 +1055,7 @@ def admin_messages():
     if 'admin_id' not in session:
         return redirect(url_for('admin_login'))
     messages = Contact.query.order_by(Contact.created_at.desc()).all()
-    return render_template('admin_messages.html', messages=messages)
+    return render_template('admin/messages.html', messages=messages)
 
 @app.route('/admin/update-status/<appid>/<status>')
 def update_status(appid, status):
@@ -1094,7 +1094,7 @@ def admin_student_detail(student_id):
         return redirect(url_for('admin_login'))
     student = Student.query.filter_by(student_id=student_id).first_or_404()
     application = Application.query.filter_by(studentid=student_id).first()
-    return render_template('admin_student_detail.html', student=student, application=application, courses=COURSES)
+    return render_template('admin/student_detail.html', student=student, application=application, courses=COURSES)
 
 @app.route('/admin/delete-student/<student_id>')
 def delete_student(student_id):

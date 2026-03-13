@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}Student Details{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-page { min-height: calc(100vh - 250px); padding: 2rem 0; background: var(--background); }
+    .admin-container { max-width: 1200px; margin: 0 auto; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+    .page-header h1 { font-family: 'Playfair Display', serif; color: var(--primary); margin: 0; }
+    .sidebar { background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding: 1.5rem; }
+    .sidebar-menu { list-style: none; padding: 0; margin: 0; }
+    .sidebar-menu li { margin-bottom: 0.5rem; }
+    .sidebar-menu a { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: var(--radius-sm); color: var(--text-dark); font-weight: 500; transition: all 0.3s ease; }
+    .sidebar-menu a:hover, .sidebar-menu a.active { background: var(--primary); color: white; }
+    .admin-layout { display: grid; grid-template-columns: 250px 1fr; gap: 2rem; }
+    @media (max-width: 992px) { .admin-layout { grid-template-columns: 1fr; } }
+    .detail-card { background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding: 1.5rem; margin-bottom: 1.5rem; }
+    .detail-card h3 { color: var(--primary); margin-bottom: 1rem; font-size: 1.1rem; }
+    .detail-row { display: flex; padding: 0.75rem 0; border-bottom: 1px solid #eee; }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-label { font-weight: 500; color: var(--text-muted); width: 200px; }
+    .detail-value { color: var(--text-dark); }
+    .badge { padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.85rem; }
+    .badge-success { background: #e8f5e9; color: #2e7d32; }
+    .badge-warning { background: #fff3e0; color: #e65100; }
+    .badge-info { background: #e3f2fd; color: #1565c0; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <div class="admin-container">
+        <div class="page-header">
+            <h1><i class="fas fa-user me-2"></i>Student Details</h1>
+            <a href="{{ url_for('admin_applications') }}" class="btn btn-outline"><i class="fas fa-arrow-left me-2"></i>Back</a>
+        </div>
+        
+        <div class="admin-layout">
+            <aside>
+                <div class="sidebar">
+                    <ul class="sidebar-menu">
+                        <li><a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                        <li><a href="{{ url_for('admin_applications') }}"><i class="fas fa-users"></i> Applications</a></li>
+                        <li><a href="{{ url_for('admin_merit_list') }}"><i class="fas fa-list-ol"></i> Merit List</a></li>
+                        <li><a href="{{ url_for('admin_messages') }}"><i class="fas fa-envelope"></i> Messages</a></li>
+                        <li><a href="{{ url_for('admin_settings') }}"><i class="fas fa-cog"></i> Settings</a></li>
+                    </ul>
+                </div>
+            </aside>
+            
+            <main>
+                <div class="detail-card">
+                    <h3><i class="fas fa-user me-2"></i>Personal Information</h3>
+                    <div class="detail-row">
+                        <span class="detail-label">Student ID</span>
+                        <span class="detail-value">{{ student.student_id }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Name</span>
+                        <span class="detail-value">{{ student.name }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Email</span>
+                        <span class="detail-value">{{ student.email }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Mobile</span>
+                        <span class="detail-value">{{ student.contact }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Date of Birth</span>
+                        <span class="detail-value">{{ student.dob or 'N/A' }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Gender</span>
+                        <span class="detail-value">{{ student.gender or 'N/A' }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Category</span>
+                        <span class="detail-value">{{ student.category or 'General' }}</span>
+                    </div>
+                </div>
+                
+                <div class="detail-card">
+                    <h3><i class="fas fa-graduation-cap me-2"></i>Course Information</h3>
+                    <div class="detail-row">
+                        <span class="detail-label">Course Preference 1</span>
+                        <span class="detail-value">{{ student.course_pref_1 or student.course or 'N/A' }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Course Preference 2</span>
+                        <span class="detail-value">{{ student.course_pref_2 or 'N/A' }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Course Preference 3</span>
+                        <span class="detail-value">{{ student.course_pref_3 or 'N/A' }}</span>
+                    </div>
+                </div>
+                
+                <div class="detail-card">
+                    <h3><i class="fas fa-book me-2"></i>Academic Information</h3>
+                    <div class="detail-row">
+                        <span class="detail-label">SSC/10th Marks</span>
+                        <span class="detail-value">{{ student.ssc_marks or 'N/A' }}%</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">HSC/12th Marks</span>
+                        <span class="detail-value">{{ student.hsc_marks or 'N/A' }}%</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Merit Rank</span>
+                        <span class="detail-value">
+                            {% if student.merit_rank %}
+                            <span class="badge badge-info">#{{ student.merit_rank }}</span>
+                            {% else %}
+                            Not Listed
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                
+                {% if application %}
+                <div class="detail-card">
+                    <h3><i class="fas fa-file-alt me-2"></i>Application Status</h3>
+                    <div class="detail-row">
+                        <span class="detail-label">Application ID</span>
+                        <span class="detail-value">{{ application.appid }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Status</span>
+                        <span class="detail-value">
+                            {% if application.status == 'approved' or application.status == 'admitted' %}
+                            <span class="badge badge-success">{{ application.status }}</span>
+                            {% elif application.status == 'submitted' %}
+                            <span class="badge badge-warning">{{ application.status }}</span>
+                            {% else %}
+                            <span class="badge badge-info">{{ application.status }}</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Submitted On</span>
+                        <span class="detail-value">{{ application.submitted_at.strftime('%d-%m-%Y') if application.submitted_at else 'N/A' }}</span>
+                    </div>
+                </div>
+                {% endif %}
+            </main>
+        </div>
+    </div>
+</div>
+{% endblock %}

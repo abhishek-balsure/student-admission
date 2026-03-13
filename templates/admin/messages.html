@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Messages{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-page { min-height: calc(100vh - 250px); padding: 2rem 0; background: var(--background); }
+    .admin-container { max-width: 1200px; margin: 0 auto; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+    .page-header h1 { font-family: 'Playfair Display', serif; color: var(--primary); margin: 0; }
+    .sidebar { background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding: 1.5rem; }
+    .sidebar-menu { list-style: none; padding: 0; margin: 0; }
+    .sidebar-menu li { margin-bottom: 0.5rem; }
+    .sidebar-menu a { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: var(--radius-sm); color: var(--text-dark); font-weight: 500; transition: all 0.3s ease; }
+    .sidebar-menu a:hover, .sidebar-menu a.active { background: var(--primary); color: white; }
+    .admin-layout { display: grid; grid-template-columns: 250px 1fr; gap: 2rem; }
+    @media (max-width: 992px) { .admin-layout { grid-template-columns: 1fr; } }
+    .messages-card { background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); overflow: hidden; }
+    .messages-list { list-style: none; padding: 0; margin: 0; }
+    .message-item { padding: 1.5rem; border-bottom: 1px solid #eee; transition: all 0.3s ease; }
+    .message-item:last-child { border-bottom: none; }
+    .message-item:hover { background: #f8f9fa; }
+    .message-item.unread { border-left: 4px solid var(--primary); background: #f0f4ff; }
+    .message-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem; }
+    .message-sender { font-weight: 600; color: var(--primary); }
+    .message-date { font-size: 0.85rem; color: var(--text-muted); }
+    .message-subject { font-weight: 500; margin-bottom: 0.5rem; }
+    .message-body { color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; }
+    .empty-state { text-align: center; padding: 3rem; color: var(--text-muted); }
+    .empty-state i { font-size: 4rem; margin-bottom: 1rem; opacity: 0.5; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <div class="admin-container">
+        <div class="page-header">
+            <h1><i class="fas fa-envelope me-2"></i>Contact Messages</h1>
+        </div>
+        
+        <div class="admin-layout">
+            <aside>
+                <div class="sidebar">
+                    <ul class="sidebar-menu">
+                        <li><a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                        <li><a href="{{ url_for('admin_applications') }}"><i class="fas fa-users"></i> Applications</a></li>
+                        <li><a href="{{ url_for('admin_merit_list') }}"><i class="fas fa-list-ol"></i> Merit List</a></li>
+                        <li><a href="{{ url_for('admin_messages') }}" class="active"><i class="fas fa-envelope"></i> Messages</a></li>
+                        <li><a href="{{ url_for('admin_settings') }}"><i class="fas fa-cog"></i> Settings</a></li>
+                    </ul>
+                </div>
+            </aside>
+            
+            <main>
+                <div class="messages-card">
+                    {% if messages %}
+                    <ul class="messages-list">
+                        {% for msg in messages %}
+                        <li class="message-item {% if not msg.replied %}unread{% endif %}">
+                            <div class="message-header">
+                                <span class="message-sender">{{ msg.name }}</span>
+                                <span class="message-date">{{ msg.created_at.strftime('%d-%m-%Y %H:%M') if msg.created_at else '' }}</span>
+                            </div>
+                            <div class="message-subject">{{ msg.subject }}</div>
+                            <div class="message-body">{{ msg.message }}</div>
+                            <div class="message-meta mt-2">
+                                <small class="text-muted">{{ msg.email }}</small>
+                                {% if msg.replied %}
+                                <span class="badge bg-success ms-2">Replied</span>
+                                {% else %}
+                                <span class="badge bg-warning ms-2">Pending</span>
+                                {% endif %}
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h3>No Messages</h3>
+                        <p>Contact form submissions will appear here.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </main>
+        </div>
+    </div>
+</div>
+{% endblock %}
