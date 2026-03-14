@@ -80,46 +80,24 @@ def not_found(e):
     return render_template('404.html'), 404
 
 COURSES = {
-    'Computer Science': {
-        'fees': 75000, 'seats': 120, 'duration': '4 Years',
-        'eligibility': '10+2 with Physics, Chemistry, Mathematics',
-        'description': 'Covers programming, AI, ML, Data Science, Web Development'
-    },
-    'Information Technology': {
-        'fees': 65000, 'seats': 100, 'duration': '4 Years',
-        'eligibility': '10+2 with Physics, Chemistry, Mathematics',
-        'description': 'Software development, Networking, Cloud Computing'
-    },
-    'Electronics Engineering': {
-        'fees': 60000, 'seats': 80, 'duration': '4 Years',
-        'eligibility': '10+2 with Physics, Chemistry, Mathematics',
-        'description': 'Circuit design, Embedded systems, VLSI'
-    },
-    'Mechanical Engineering': {
-        'fees': 55000, 'seats': 90, 'duration': '4 Years',
-        'eligibility': '10+2 with Physics, Chemistry, Mathematics',
-        'description': 'Automobiles, Robotics, Thermal Engineering'
-    },
-    'Civil Engineering': {
-        'fees': 50000, 'seats': 70, 'duration': '4 Years',
-        'eligibility': '10+2 with Physics, Chemistry, Mathematics',
-        'description': 'Construction, Structural Engineering, Surveying'
-    },
-    'Business Administration': {
-        'fees': 45000, 'seats': 60, 'duration': '3 Years',
-        'eligibility': '10+2 in any stream',
-        'description': 'Management, Marketing, Finance, HR'
-    },
-    'Data Science': {
-        'fees': 80000, 'seats': 50, 'duration': '4 Years',
-        'eligibility': '10+2 with Mathematics',
-        'description': 'Big Data, Analytics, Machine Learning, AI'
-    },
-    'Artificial Intelligence': {
-        'fees': 85000, 'seats': 40, 'duration': '4 Years',
-        'eligibility': '10+2 with Mathematics',
-        'description': 'Deep Learning, Neural Networks, NLP, Robotics'
-    }
+    'BCA': {'fees': 21500, 'seats': 60, 'duration': '3 Years',
+            'eligibility': '10+2 in any stream with Mathematics',
+            'description': 'Bachelor of Computer Applications'},
+    'BSc CS': {'fees': 21500, 'seats': 60, 'duration': '3 Years',
+               'eligibility': '10+2 with Physics, Chemistry, Mathematics',
+               'description': 'Bachelor of Science in Computer Science'},
+    'BCom': {'fees': 13300, 'seats': 120, 'duration': '3 Years',
+             'eligibility': '10+2 in any stream',
+             'description': 'Bachelor of Commerce'},
+    'BCom (BM)': {'fees': 13300, 'seats': 60, 'duration': '3 Years',
+                  'eligibility': '10+2 in any stream',
+                  'description': 'Bachelor of Commerce (Business Management)'},
+    'BCom (CA)': {'fees': 13300, 'seats': 60, 'duration': '3 Years',
+                  'eligibility': '10+2 in any stream',
+                  'description': 'Bachelor of Commerce (Computer Application)'},
+    'BA': {'fees': 10700, 'seats': 120, 'duration': '3 Years',
+           'eligibility': '10+2 in any stream',
+           'description': 'Bachelor of Arts'},
 }
 
 DOCUMENT_CHECKLIST = [
@@ -953,19 +931,8 @@ def admin_update_status(appid):
 def admin_merit_list():
     course = request.args.get('course', 'BCA')
     
-    course_map = {
-        'BCA': ['BCA', 'Computer Science'],
-        'BSc CS': ['BSc CS', 'Computer Science'],
-        'BCom': ['BCom', 'Commerce'],
-        'BCom (BM)': ['BCom (BM)', 'Commerce'],
-        'BCom (CA)': ['BCom (CA)', 'Commerce'],
-        'BA': ['BA', 'Arts']
-    }
-    
-    course_values = course_map.get(course, [course])
-    
     merit_list = Student.query.filter(
-        (Student.course_pref_1.in_(course_values)) | (Student.course.in_(course_values)),
+        Student.course_pref_1 == course,
         Student.hsc_marks != None
     ).order_by(Student.hsc_marks.desc()).all()
     
@@ -978,19 +945,8 @@ def admin_generate_merit():
     cutoff = float(request.form.get('cutoff', 0))
     seats = int(request.form.get('seats', 60))
     
-    course_map = {
-        'BCA': ['BCA', 'Computer Science'],
-        'BSc CS': ['BSc CS', 'Computer Science'],
-        'BCom': ['BCom', 'Commerce'],
-        'BCom (BM)': ['BCom (BM)', 'Commerce'],
-        'BCom (CA)': ['BCom (CA)', 'Commerce'],
-        'BA': ['BA', 'Arts']
-    }
-    
-    course_values = course_map.get(course, [course])
-    
     students = Student.query.filter(
-        (Student.course_pref_1.in_(course_values)) | (Student.course.in_(course_values)),
+        Student.course_pref_1 == course,
         Student.hsc_marks != None,
         Student.hsc_marks >= str(cutoff)
     ).order_by(Student.hsc_marks.desc()).limit(seats).all()
