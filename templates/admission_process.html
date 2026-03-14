@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Admission Process{% endblock %}
+
+{% block extra_css %}
+<style>
+    .process-page { padding: 3rem 0; min-height: calc(100vh - 250px); background: linear-gradient(135deg, var(--background) 0%, #e8eaf6 100%); }
+    .process-container { max-width: 800px; margin: 0 auto; }
+    
+    .process-card { background: white; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-lg); }
+    .process-header { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); padding: 2rem; text-align: center; color: white; }
+    .process-header h1 { font-family: 'Playfair Display', serif; margin: 0.5rem 0 0; }
+    .process-header p { opacity: 0.9; margin: 0; }
+    
+    .timeline { padding: 2rem; }
+    .timeline-item { display: flex; gap: 1.5rem; margin-bottom: 2rem; position: relative; }
+    .timeline-item:last-child { margin-bottom: 0; }
+    .timeline-item::before { content: ''; position: absolute; left: 20px; top: 50px; bottom: -30px; width: 2px; background: #e0e0e0; }
+    .timeline-item:last-child::before { display: none; }
+    
+    .timeline-number {
+        width: 40px;
+        height: 40px;
+        background: var(--primary);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        flex-shrink: 0;
+        font-size: 1rem;
+    }
+    .timeline-content { flex: 1; }
+    .timeline-content h3 { color: var(--primary); margin: 0 0 0.5rem; font-size: 1.1rem; }
+    .timeline-content p { color: var(--text-muted); margin: 0; line-height: 1.6; }
+    .timeline-content .duration { font-size: 0.85rem; color: var(--secondary); font-weight: 500; margin-top: 0.5rem; }
+    
+    .cta-section { background: var(--background); padding: 2rem; text-align: center; }
+    .cta-section p { margin-bottom: 1rem; color: var(--text-muted); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="process-page">
+    <div class="process-container">
+        <div class="process-card">
+            <div class="process-header">
+                <h1>Admission Process</h1>
+                <p>Sarhad College of Arts, Commerce & Science</p>
+            </div>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-number">1</div>
+                    <div class="timeline-content">
+                        <h3>Register & Pay Application Fee</h3>
+                        <p>Create your account on the admission portal and pay the non-refundable application fee of ₹500 online.</p>
+                        <div class="duration"><i class="fas fa-clock me-1"></i> First Step</div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-number">2</div>
+                    <div class="timeline-content">
+                        <h3>Fill Application Form</h3>
+                        <p>Complete the online application form with your personal details, academic history, and course preferences (up to 3 choices).</p>
+                        <div class="duration"><i class="fas fa-clock me-1"></i> 15-20 minutes</div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-number">3</div>
+                    <div class="timeline-content">
+                        <h3>Upload Documents</h3>
+                        <p>Upload required documents including passport photo, signature, 10th/12th marksheets, category certificates, and Aadhaar card.</p>
+                        <div class="duration"><i class="fas fa-clock me-1"></i> 10 minutes</div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-number">4</div>
+                    <div class="timeline-content">
+                        <h3>Merit List Publication</h3>
+                        <p>Based on your 12th marks and category, your merit rank will be generated. Check the merit list on the portal.</p>
+                        <div class="duration"><i class="fas fa-clock me-1"></i> Within 2 weeks of application deadline</div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-number">5</div>
+                    <div class="timeline-content">
+                        <h3>Fee Payment & Confirmation</h3>
+                        <p>Pay the course fee online to confirm your admission. Download your fee receipt from the dashboard.</p>
+                        <div class="duration"><i class="fas fa-clock me-1"></i> Within 7 days of merit list</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cta-section">
+                <p>Ready to begin your journey?</p>
+                <a href="{{ url_for('register') }}" class="btn btn-primary"><i class="fas fa-user-plus me-2"></i> Apply Now</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

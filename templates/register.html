@@ -313,13 +313,13 @@
                             </div>
                         </div>
                         
-                        <div class="form-group form-group-full">
-                            <div class="captcha-box">
-                                <label>Security Check <span class="required">*</span></label>
-                                <div class="captcha-question">What is 3 + 4 = ?</div>
-                                <input type="number" name="captcha" class="form-control captcha-input" placeholder="?" required min="7" max="7" style="margin: 0 auto;">
-                            </div>
-                        </div>
+                         <div class="form-group form-group-full">
+                             <div class="captcha-box">
+                                 <label>Security Check <span class="required">*</span></label>
+                                 <div class="captcha-question">{{ captcha_question }}</div>
+                                 <input type="number" name="captcha" class="form-control captcha-input" placeholder="?" required>
+                             </div>
+                         </div>
                         
                         <div class="form-group form-group-full">
                             <div class="terms-checkbox">

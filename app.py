@@ -354,9 +354,10 @@ def contact():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    import random
     if request.method == 'POST':
         captcha = request.form.get('captcha')
-        if captcha != '7':
+        if not captcha or int(captcha) != session.get('captcha_answer', 0):
             flash('Incorrect captcha answer!', 'error')
             return redirect(url_for('register'))
         
@@ -396,7 +397,15 @@ def register():
         
         flash(f'Registration successful! Your Application No: {student_id}. Please login to continue.', 'success')
         return redirect(url_for('login'))
-    return render_template('register.html', courses=COURSES)
+    
+    # GET request - generate captcha
+    num1 = random.randint(1, 10)
+    num2 = random.randint(1, 10)
+    captcha_answer = num1 + num2
+    session['captcha_answer'] = captcha_answer
+    captcha_question = f"What is {num1} + {num2}?"
+    
+    return render_template('register.html', courses=COURSES, captcha_question=captcha_question)
 
 @app.route('/payment', methods=['GET', 'POST'])
 def payment():
@@ -772,6 +781,10 @@ def merit_list():
                          merit_published=merit_published,
                          search=search,
                          search_result=search_result)
+
+@app.route('/admission-process')
+def admission_process():
+    return render_template('admission_process.html')
 
 @app.route('/seats')
 def seat_matrix():
