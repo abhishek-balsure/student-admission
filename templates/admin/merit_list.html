@@ -158,4 +158,22 @@
         </div>
     </div>
 </div>
+
+{% block extra_js %}
+<script>
+function publishMerit() {
+    if (confirm('Are you sure you want to publish the merit list? This will make it visible to students.')) {
+        fetch('{{ url_for("admin_publish_merit") }}', {
+            method: 'POST'
+        })
+        .then(response => {
+            alert('Merit list published successfully!');
+            location.reload();
+        })
+        .catch(error => {
+            alert('Error publishing merit list');
+        });
+    }
+}
+</script>
 {% endblock %}

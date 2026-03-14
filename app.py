@@ -240,6 +240,10 @@ class Contact(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     replied = db.Column(db.Boolean, default=False)
 
+class Settings(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    merit_published = db.Column(db.Boolean, default=False)
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
@@ -750,7 +754,8 @@ def merit_list():
     selected_course = request.args.get('course', 'BCA')
     search = request.args.get('search', '')
     
-    merit_published = True
+    settings = Settings.query.first()
+    merit_published = settings.merit_published if settings else False
     
     students = Student.query.filter(
         Student.course_pref_1 == selected_course,
@@ -996,6 +1001,19 @@ def admin_generate_merit():
     db.session.commit()
     flash(f'Merit list generated for {course} - {len(students)} students listed', 'success')
     return redirect(url_for('admin_merit_list', course=course))
+
+@app.route('/admin/publish-merit', methods=['POST'])
+@admin_required
+def admin_publish_merit():
+    settings = Settings.query.first()
+    if not settings:
+        settings = Settings(merit_published=True)
+        db.session.add(settings)
+    else:
+        settings.merit_published = True
+    db.session.commit()
+    flash('Merit list published successfully!', 'success')
+    return redirect(url_for('admin_merit_list'))
 
 @app.route('/admin/settings')
 @admin_required
