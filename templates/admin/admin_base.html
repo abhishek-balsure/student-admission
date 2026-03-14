@@ -96,9 +96,11 @@
                 <small>Sarhad College Admission Portal</small>
             </div>
         </a>
+        {% if session.get('admin_id') %}
         <a href="{{ url_for('logout') }}" class="btn-logout">
             <i class="fas fa-sign-out-alt me-1"></i> Logout
         </a>
+        {% endif %}
     </nav>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
