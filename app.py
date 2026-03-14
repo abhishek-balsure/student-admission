@@ -66,6 +66,15 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'admin_id' not in session:
+            flash('Please login as admin to continue', 'warning')
+            return redirect(url_for('admin_login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 @app.errorhandler(404)
 def not_found(e):
     return render_template('404.html'), 404
@@ -847,10 +856,8 @@ def admin_login():
     return render_template('admin/login.html')
 
 @app.route('/admin/dashboard')
+@admin_required
 def admin_dashboard():
-    if 'admin_id' not in session:
-        return redirect(url_for('admin_login'))
-    
     applications = Application.query.all()
     stats = {
         'total': len(applications),
@@ -874,10 +881,8 @@ def admin_dashboard():
                          category_labels=categories, category_data=category_data)
 
 @app.route('/admin/applications')
+@admin_required
 def admin_applications():
-    if 'admin_id' not in session:
-        return redirect(url_for('admin_login'))
-    
     search = request.args.get('search', '')
     course_filter = request.args.get('course', '')
     status_filter = request.args.get('status', '')
@@ -901,20 +906,16 @@ def admin_applications():
                          status_filter=status_filter, category_filter=category_filter)
 
 @app.route('/admin/application/<appid>')
+@admin_required
 def admin_application_detail(appid):
-    if 'admin_id' not in session:
-        return redirect(url_for('admin_login'))
-    
     application = Application.query.filter_by(appid=appid).first_or_404()
     student = Student.query.filter_by(student_id=application.studentid).first()
     
     return render_template('admin/application_detail.html', application=application, student=student)
 
 @app.route('/admin/update-status/<appid>', methods=['POST'])
+@admin_required
 def admin_update_status(appid):
-    if 'admin_id' not in session:
-        return redirect(url_for('admin_login'))
-    
     application = Application.query.filter_by(appid=appid).first()
     if application:
         application.status = request.form.get('status', application.status)
@@ -930,10 +931,8 @@ def admin_update_status(appid):
     return redirect(url_for('admin_application_detail', appid=appid))
 
 @app.route('/admin/merit-list')
+@admin_required
 def admin_merit_list():
-    if 'admin_id' not in session:
-        return redirect(url_for('admin_login'))
-    
     course = request.args.get('course', 'BCA')
     
     course_map = {
@@ -955,10 +954,8 @@ def admin_merit_list():
     return render_template('admin/merit_list.html', merit_list=merit_list, selected_course=course, courses=COURSES)
 
 @app.route('/admin/generate-merit', methods=['POST'])
+@admin_required
 def admin_generate_merit():
-    if 'admin_id' not in session:
-        return redirect(url_for('admin_login'))
-    
     course = request.form.get('course')
     cutoff = float(request.form.get('cutoff', 0))
     seats = int(request.form.get('seats', 60))
@@ -988,10 +985,8 @@ def admin_generate_merit():
     return redirect(url_for('admin_merit_list', course=course))
 
 @app.route('/admin/settings')
+@admin_required
 def admin_settings():
-    if 'admin_id' not in session:
-        return redirect(url_for('admin_login'))
-    
     return render_template('admin/settings.html', courses=COURSES, settings={
         'reg_start': '2025-06-01',
         'reg_end': '2025-07-31',
@@ -1001,24 +996,20 @@ def admin_settings():
     })
 
 @app.route('/admin/save-settings', methods=['POST'])
+@admin_required
 def admin_save_settings():
-    if 'admin_id' not in session:
-        return redirect(url_for('admin_login'))
-    
     flash('Settings saved successfully!', 'success')
     return redirect(url_for('admin_settings'))
 
 @app.route('/admin/messages')
+@admin_required
 def admin_messages():
-    if 'admin_id' not in session:
-        return redirect(url_for('admin_login'))
     messages = Contact.query.order_by(Contact.created_at.desc()).all()
     return render_template('admin/messages.html', messages=messages)
 
 @app.route('/admin/export/<format>')
+@admin_required
 def admin_export_csv(format):
-    if 'admin_id' not in session:
-        return redirect(url_for('admin_login'))
     applications = db.session.query(Student, Application).outerjoin(Application, Student.student_id == Application.studentid).all()
     if format == 'csv':
         output = io.StringIO()
@@ -1031,24 +1022,21 @@ def admin_export_csv(format):
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/export-merit-pdf')
+@admin_required
 def admin_export_merit_pdf():
-    if 'admin_id' not in session:
-        return redirect(url_for('admin_login'))
     flash('PDF export coming soon!', 'info')
     return redirect(url_for('admin_merit_list'))
 
 @app.route('/admin/student/<student_id>')
+@admin_required
 def admin_student_detail(student_id):
-    if 'admin_id' not in session:
-        return redirect(url_for('admin_login'))
     student = Student.query.filter_by(student_id=student_id).first_or_404()
     application = Application.query.filter_by(studentid=student_id).first()
     return render_template('admin/student_detail.html', student=student, application=application, courses=COURSES)
 
 @app.route('/admin/delete-student/<student_id>')
+@admin_required
 def delete_student(student_id):
-    if 'admin_id' not in session:
-        return redirect(url_for('admin_login'))
     student = Student.query.filter_by(student_id=student_id).first()
     if student:
         application = Application.query.filter_by(studentid=student_id).first()
@@ -1060,9 +1048,8 @@ def delete_student(student_id):
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/approve-all')
+@admin_required
 def approve_all():
-    if 'admin_id' not in session:
-        return redirect(url_for('admin_login'))
     applications = Application.query.filter_by(status='pending').all()
     for app in applications:
         app.status = 'approved'
