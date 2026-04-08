@@ -336,13 +336,7 @@ def contact():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    import random
     if request.method == 'POST':
-        captcha = request.form.get('captcha')
-        if not captcha or int(captcha) != session.get('captcha_answer', 0):
-            flash('Incorrect captcha answer!', 'error')
-            return redirect(url_for('register'))
-        
         if request.form.get('password') != request.form.get('confirm_password'):
             flash('Passwords do not match!', 'error')
             return redirect(url_for('register'))
@@ -380,14 +374,7 @@ def register():
         flash(f'Registration successful! Your Application No: {student_id}. Please login to continue.', 'success')
         return redirect(url_for('login'))
     
-    # GET request - generate captcha
-    num1 = random.randint(1, 10)
-    num2 = random.randint(1, 10)
-    captcha_answer = num1 + num2
-    session['captcha_answer'] = captcha_answer
-    captcha_question = f"What is {num1} + {num2}?"
-    
-    return render_template('register.html', courses=COURSES, captcha_question=captcha_question)
+    return render_template('register.html', courses=COURSES)
 
 @app.route('/payment', methods=['GET', 'POST'])
 def payment():
