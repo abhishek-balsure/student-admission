@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Facilities{% endblock %}
+
+{% block extra_css %}
+<style>
+    .facilities-page { padding: 3rem 0; }
+    .facility-card { background: white; border-radius: var(--radius-lg); padding: 2rem; box-shadow: var(--shadow-md); }
+    .facility-icon { width: 80px; height: 80px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin-bottom: 1rem; }
+    .facility-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="facilities-page">
+    <div class="container">
+        <h1 class="text-center mb-4" style="color: var(--primary);">Our Facilities</h1>
+        
+        <div class="facility-grid">
+            <div class="facility-card">
+                <div class="facility-icon"><i class="fas fa-wifi"></i></div>
+                <h4 style="color: var(--primary);">Wi-Fi Campus</h4>
+                <p>High-speed internet connectivity throughout the campus for students and staff.</p>
+            </div>
+            
+            <div class="facility-card">
+                <div class="facility-icon"><i class="fas fa-book"></i></div>
+                <h4 style="color: var(--primary);">Library</h4>
+                <p>Well-stocked library with thousands of books, journals, and digital resources.</p>
+            </div>
+            
+            <div class="facility-card">
+                <div class="facility-icon"><i class="fas fa-laptop"></i></div>
+                <h4 style="color: var(--primary);">Computer Lab</h4>
+                <p>Fully equipped computer labs with latest software and hardware.</p>
+            </div>
+            
+            <div class="facility-card">
+                <div class="facility-icon"><i class="fas fa-flask"></i></div>
+                <h4 style="color: var(--primary);">Science Labs</h4>
+                <p>Well-equipped laboratories for Physics, Chemistry, and Computer Science.</p>
+            </div>
+            
+            <div class="facility-card">
+                <div class="facility-icon"><i class="fas fa-bus"></i></div>
+                <h4 style="color: var(--primary);">Transportation</h4>
+                <p>Bus facility available for students from various parts of Pune.</p>
+            </div>
+            
+            <div class="facility-card">
+                <div class="facility-icon"><i class="fas fa-utensils"></i></div>
+                <h4 style="color: var(--primary);">Cafeteria</h4>
+                <p>Hygienic food and beverages available at reasonable rates.</p>
+            </div>
+            
+            <div class="facility-card">
+                <div class="facility-icon"><i class="fas fa-users"></i></div>
+                <h4 style="color: var(--primary);">Auditorium</h4>
+                <p>Spacious auditorium for events, seminars, and cultural activities.</p>
+            </div>
+            
+            <div class="facility-card">
+                <div class="facility-icon"><i class="fas fa-running"></i></div>
+                <h4 style="color: var(--primary);">Sports Ground</h4>
+                <p>Outdoor sports facilities for cricket, football, volleyball, etc.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

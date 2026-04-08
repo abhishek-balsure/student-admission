@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}About Us{% endblock %}
+
+{% block extra_css %}
+<style>
+    .about-page { padding: 3rem 0; }
+    .about-card { background: white; border-radius: var(--radius-lg); padding: 2rem; box-shadow: var(--shadow-md); }
+    .about-img { width: 100%; border-radius: var(--radius-md); object-fit: cover; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="about-page">
+    <div class="container">
+        <div class="about-card">
+            <h1 class="mb-4" style="color: var(--primary);">About Sarhad College</h1>
+            <img src="{{ url_for('static', filename='images/clg.jpg') }}" alt="College" class="about-img mb-4" style="max-height: 300px;">
+            
+            <h3 style="color: var(--primary);">Welcome to Sarhad College</h3>
+            <p>Sarhad College of Arts, Commerce & Science is a premier educational institution located in Katraj, Pune. Established with a vision to provide quality education to students from all backgrounds, we strive to empower the next generation with knowledge, skills, and values.</p>
+            
+            <h4 style="color: var(--primary);" class="mt-4">Our Mission</h4>
+            <p>To provide accessible, affordable, and quality education that transforms students into responsible citizens and competent professionals.</p>
+            
+            <h4 style="color: var(--primary);" class="mt-4">Our Vision</h4>
+            <p>To be a center of excellence in education, research, and community service, nurturing students to achieve their full potential.</p>
+            
+            <h4 style="color: var(--primary);" class="mt-4">Key Highlights</h4>
+            <ul>
+                <li>Affiliated to Savitribai Phule Pune University</li>
+                <li>NAAC Accredited 'B+' Grade</li>
+                <li>UGC 2(f) & 12(B) Recognized</li>
+                <li>Well-qualified faculty</li>
+                <li>Modern infrastructure and facilities</li>
+                <li>Regular academic and extra-curricular activities</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

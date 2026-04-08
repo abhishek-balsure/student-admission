@@ -334,6 +334,22 @@ def contact():
         return redirect(url_for('contact'))
     return render_template('contact.html')
 
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+@app.route('/faculty')
+def faculty():
+    return render_template('faculty.html')
+
+@app.route('/facilities')
+def facilities():
+    return render_template('facilities.html')
+
+@app.route('/gallery')
+def gallery():
+    return render_template('gallery.html')
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':

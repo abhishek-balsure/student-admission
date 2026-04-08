@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Faculty{% endblock %}
+
+{% block extra_css %}
+<style>
+    .faculty-page { padding: 3rem 0; }
+    .faculty-card { background: white; border-radius: var(--radius-lg); padding: 2rem; box-shadow: var(--shadow-md); text-align: center; }
+    .faculty-img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin: 0 auto 1rem; background: var(--primary-light); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; }
+    .faculty-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="faculty-page">
+    <div class="container">
+        <h1 class="text-center mb-4" style="color: var(--primary);">Our Faculty</h1>
+        
+        <div class="faculty-grid">
+            <div class="faculty-card">
+                <div class="faculty-img"><i class="fas fa-user"></i></div>
+                <h4>Dr. S. M. Sharma</h4>
+                <p class="text-muted">Principal</p>
+                <p>M.A., Ph.D.</p>
+            </div>
+            
+            <div class="faculty-card">
+                <div class="faculty-img"><i class="fas fa-user"></i></div>
+                <h4>Prof. A. B. Patil</h4>
+                <p class="text-muted">Head, Commerce Dept.</p>
+                <p>M.Com, NET</p>
+            </div>
+            
+            <div class="faculty-card">
+                <div class="faculty-img"><i class="fas fa-user"></i></div>
+                <h4>Prof. P. R. Desai</h4>
+                <p class="text-muted">Head, Computer Science</p>
+                <p>M.Sc., Ph.D.</p>
+            </div>
+            
+            <div class="faculty-card">
+                <div class="faculty-img"><i class="fas fa-user"></i></div>
+                <h4>Prof. R. S. Jadhav</h4>
+                <p class="text-muted">Head, Arts Dept.</p>
+                <p>M.A., B.Ed.</p>
+            </div>
+            
+            <div class="faculty-card">
+                <div class="faculty-img"><i class="fas fa-user"></i></div>
+                <h4>Prof. V. K. More</h4>
+                <p class="text-muted">Senior Faculty, BCA</p>
+                <p>M.C.A.</p>
+            </div>
+            
+            <div class="faculty-card">
+                <div class="faculty-img"><i class="fas fa-user"></i></div>
+                <h4>Prof. S. D. Kamble</h4>
+                <p class="text-muted">Senior Faculty, BCom</p>
+                <p>M.Com, NET</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
