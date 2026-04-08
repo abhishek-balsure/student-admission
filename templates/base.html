@@ -36,6 +36,12 @@
             align-items: center;
             gap: 1rem;
         }
+        .college-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
         .logo-placeholder {
             width: 50px;
             height: 50px;
@@ -146,7 +152,7 @@
     <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('index') }}">
-                <div class="logo-placeholder">SC</div>
+                <img src="{{ url_for('static', filename='images/clg.jpg') }}" alt="Sarhad College Logo" class="college-logo">
                 <span class="college-name">Sarhad College of<br>Arts, Commerce & Science</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
