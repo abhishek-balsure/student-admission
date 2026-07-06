@@ -1110,7 +1110,9 @@ def upload():
         if not doc_config:
             return jsonify({'success': False, 'message': 'Invalid document type'})
         
-        if file.size > doc_config['max_bytes']:
+        # Check file size using content-length header
+        content_length = request.content_length
+        if content_length and content_length > doc_config['max_bytes']:
             return jsonify({'success': False, 'message': f'File size exceeds {doc_config["max_size"]} limit'})
         
         ext = os.path.splitext(file.filename)[1].lower().lstrip('.')
@@ -1118,7 +1120,7 @@ def upload():
         if ext not in allowed:
             return jsonify({'success': False, 'message': 'Invalid file format'})
         
-        filename = f"{doc_id}_{application.appid}{ext}"
+        filename = f"{doc_id}_{application.appid}.{ext}"
         file.save(os.path.join(upload_folder, filename))
         
         doc_field = f'doc_{doc_id}'
